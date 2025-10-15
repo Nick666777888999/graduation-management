@@ -11,6 +11,7 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 import json
 from collections import defaultdict
+from supabase import create_client
 
 # 設置日誌
 logging.basicConfig(level=logging.INFO)
@@ -20,18 +21,10 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(16))
 CORS(app, supports_credentials=True)
 
-# 資料檔案路徑 - 適應雲端環境
-DATA_DIR = 'data'
-os.makedirs(DATA_DIR, exist_ok=True)
-
-USERS_FILE = os.path.join(DATA_DIR, 'users.json')
-STUDENT_DATA_FILE = os.path.join(DATA_DIR, 'student_data.json')
-MESSAGES_FILE = os.path.join(DATA_DIR, 'messages.json')
-PENDING_DATA_FILE = os.path.join(DATA_DIR, 'pending_data.json')
-ANNOUNCEMENTS_FILE = os.path.join(DATA_DIR, 'announcements.json')
-FRIENDS_FILE = os.path.join(DATA_DIR, 'friends.json')
-PRIVATE_MESSAGES_FILE = os.path.join(DATA_DIR, 'private_messages.json')
-QUESTIONS_FILE = os.path.join(DATA_DIR, 'questions.json')
+# Supabase 配置
+SUPABASE_URL = os.environ.get('SUPABASE_URL')
+SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY) if SUPABASE_URL and SUPABASE_KEY else None
 
 # 線程鎖
 data_lock = Lock()
@@ -40,41 +33,53 @@ data_lock = Lock()
 last_activity = defaultdict(lambda: defaultdict(float))
 last_update_check = defaultdict(float)
 
-def load_json_file(file_path, default_data):
-    """載入 JSON 檔案"""
+def load_json_file(table_name, default_data):
+    """從 Supabase 載入數據"""
     try:
-        if os.path.exists(file_path):
-            with open(file_path, 'r', encoding='utf-8') as f:
-                return json.load(f)
+        if supabase:
+            response = supabase.table(table_name).select('*').execute()
+            return response.data if response.data else default_data
     except Exception as e:
-        logger.error(f"Error loading {file_path}: {e}")
+        logger.error(f"Error loading from Supabase {table_name}: {e}")
     return default_data
 
-def save_json_file(file_path, data):
-    """儲存 JSON 檔案"""
+def save_json_file(table_name, data):
+    """保存數據到 Supabase"""
     try:
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-        return True
+        if supabase:
+            # 清空表並插入新數據
+            supabase.table(table_name).delete().neq('id', '0').execute()
+            if data:
+                supabase.table(table_name).insert(data).execute()
+            return True
     except Exception as e:
-        logger.error(f"Error saving {file_path}: {e}")
-        return False
+        logger.error(f"Error saving to Supabase {table_name}: {e}")
+    return False
 
 def load_all_data():
     """載入所有系統資料"""
     with data_lock:
         data = {
-            'users': load_json_file(USERS_FILE, {}),
-            'student_data': load_json_file(STUDENT_DATA_FILE, {
+            'users': load_json_file('users', {}),
+            'student_data': load_json_file('student_data', {
                 'primary': [], 'junior': [], 'high': [], 'other': []
             }),
-            'messages': load_json_file(MESSAGES_FILE, []),
-            'pending_data': load_json_file(PENDING_DATA_FILE, []),
-            'announcements': load_json_file(ANNOUNCEMENTS_FILE, []),
-            'friends': load_json_file(FRIENDS_FILE, {}),
-            'private_messages': load_json_file(PRIVATE_MESSAGES_FILE, {}),
-            'questions': load_json_file(QUESTIONS_FILE, [])
+            'messages': load_json_file('messages', []),
+            'pending_data': load_json_file('pending_data', []),
+            'announcements': load_json_file('announcements', []),
+            'friends': load_json_file('friends', {}),
+            'private_messages': load_json_file('private_messages', {}),
+            'questions': load_json_file('questions', [])
         }
+        
+        # 轉換 users 數據格式
+        if data['users'] and isinstance(data['users'], list):
+            users_dict = {}
+            for user in data['users']:
+                username = user.pop('username', None)
+                if username:
+                    users_dict[username] = user
+            data['users'] = users_dict
         
         # 確保管理員帳號存在
         if 'Nick20130104' not in data['users']:
@@ -95,6 +100,27 @@ def load_all_data():
             save_all_data(data)
             
         return data
+
+def save_all_data(data):
+    """儲存所有系統資料"""
+    with data_lock:
+        success = True
+        
+        # 轉換 users 為列表格式保存
+        users_list = []
+        for username, user_data in data['users'].items():
+            user_data['username'] = username
+            users_list.append(user_data)
+        
+        success &= save_json_file('users', users_list)
+        success &= save_json_file('student_data', data['student_data'])
+        success &= save_json_file('messages', data['messages'])
+        success &= save_json_file('pending_data', data['pending_data'])
+        success &= save_json_file('announcements', data['announcements'])
+        success &= save_json_file('friends', data['friends'])
+        success &= save_json_file('private_messages', data['private_messages'])
+        success &= save_json_file('questions', data['questions'])
+        return success
 
 def save_all_data(data):
     """儲存所有系統資料"""

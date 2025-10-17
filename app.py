@@ -1319,23 +1319,6 @@ def index():
 def serve_static(path):
     return app.send_static_file(path)
 
-# 數據同步 API
-@app.route('/api/sync_data', methods=['GET', 'POST'])
-def sync_data():
-    """同步前端和後端數據"""
-    if request.method == 'GET':
-        # 前端獲取所有數據
-        system_data = load_all_data()
-        return jsonify({
-            'success': True,
-            'data': system_data
-        })
-    else:
-        # 前端保存數據
-        data = request.get_json()
-        if save_all_data(data):
-            return jsonify({'success': True, 'message': '數據已保存'})
-        return jsonify({'success': False, 'message': '保存失敗'})
 if __name__ == '__main__':
     # 初始化資料
     load_all_data()

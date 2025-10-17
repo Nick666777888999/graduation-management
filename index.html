@@ -1581,21 +1581,18 @@ async function loadBackendData() {
   }
 }
 
-// 保存數據到 API
-async function saveBackendData() {
-  try {
-    const response = await fetch('/api/sync_data', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(backendData)
-    });
-    const result = await response.json();
-    return result.success;
-  } catch (error) {
-    console.error('保存數據失敗:', error);
-    return false;
-  }
-}
+    // 保存數據到 API
+    function saveBackendData() {
+      // 使用同步方式，不等待響應
+      fetch('/api/sync_data', {
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(backendData)
+      }).catch(error => {
+        console.error('保存數據失敗:', error);
+      });
+      return true;
+    }
 
     // 初始化
     document.addEventListener('DOMContentLoaded', async function() {
@@ -1650,24 +1647,25 @@ async function saveBackendData() {
     };
 
     // 從 API 加載數據
-    async function loadBackendData() {
-      try {
-        const response = await fetch('/api/sync_data');
-        const result = await response.json();
-        if (result.success) {
-          backendData = result.data;
-          // 轉換 users 格式
-          if (backendData.users && Array.isArray(backendData.users)) {
-            const usersDict = {};
-            backendData.users.forEach(user => {
-              usersDict[user.username] = user;
-            });
-            backendData.users = usersDict;
+    function loadBackendData() {
+      return fetch('/api/sync_data')
+        .then(response => response.json())
+        .then(result => {
+          if (result.success) {
+            backendData = result.data;
+            // 轉換 users 格式
+            if (backendData.users && Array.isArray(backendData.users)) {
+              const usersDict = {};
+              backendData.users.forEach(user => {
+                usersDict[user.username] = user;
+              });
+              backendData.users = usersDict;
+            }
           }
-        }
-      } catch (error) {
-        console.error('加載數據失敗:', error);
-      }
+        })
+        .catch(error => {
+          console.error('加載數據失敗:', error);
+        });
     }
 
     // 保存數據到 API

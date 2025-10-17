@@ -1549,21 +1549,25 @@
 
     // 後端數據（從 API 獲取）
     // 後端數據（混合方案：先從 API 加載，失敗則用 localStorage）
-    let backendData = {
-      users: {},
-      studentData: { primary: [], junior: [], high: [], other: [] },
-      pendingData: [],
-      announcements: [],
-      systemConfig: {},
-      friends: {},
-      privateMessages: {},
-      questions: [],
-      chatMessages: []
+    // 後端數據（使用 localStorage）
+    const backendData = {
+      users: JSON.parse(localStorage.getItem('backend_users') || '{}'),
+      studentData: {
+        primary: JSON.parse(localStorage.getItem('backend_primary') || '[]'),
+        junior: JSON.parse(localStorage.getItem('backend_junior') || '[]'),
+        high: JSON.parse(localStorage.getItem('backend_high') || '[]'),
+        other: JSON.parse(localStorage.getItem('backend_other') || '[]')
+      },
+      pendingData: JSON.parse(localStorage.getItem('backend_pending') || '[]'),
+      announcements: JSON.parse(localStorage.getItem('announcements') || '[]'),
+      systemConfig: JSON.parse(localStorage.getItem('system_config') || '{}'),
+      friends: JSON.parse(localStorage.getItem('friends_data') || '{}'),
+      privateMessages: JSON.parse(localStorage.getItem('private_messages') || '{}'),
+      questions: JSON.parse(localStorage.getItem('questions_data') || '[]'),
+      chatMessages: JSON.parse(localStorage.getItem('chat_messages') || '[]')
     };
 
     // 從 API 加載數據，失敗時使用 localStorage
-    async function loadBackendData() {
-      try {
         // 先嘗試從 API 加載
         const response = await fetch('/api/sync_data');
         if (response.ok) {
@@ -1598,24 +1602,21 @@
     }
 
     // 保存數據：同時保存到 API 和 localStorage
-    async function saveBackendData() {
-      try {
-        // 保存到 API
-        const response = await fetch('/api/sync_data', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(backendData)
-        });
-        
-        if (response.ok) {
-          const result = await response.json();
-          if (result.success) {
-            console.log('API 保存成功');
-          }
-        }
-      } catch (error) {
-        console.log('API 保存失敗:', error);
-      }
+        // 保存後端數據
+    function saveBackendData() {
+      localStorage.setItem('backend_users', JSON.stringify(backendData.users));
+      localStorage.setItem('backend_primary', JSON.stringify(backendData.studentData.primary));
+      localStorage.setItem('backend_junior', JSON.stringify(backendData.studentData.junior));
+      localStorage.setItem('backend_high', JSON.stringify(backendData.studentData.high));
+      localStorage.setItem('backend_other', JSON.stringify(backendData.studentData.other));
+      localStorage.setItem('backend_pending', JSON.stringify(backendData.pendingData));
+      localStorage.setItem('announcements', JSON.stringify(backendData.announcements));
+      localStorage.setItem('system_config', JSON.stringify(backendData.systemConfig));
+      localStorage.setItem('friends_data', JSON.stringify(backendData.friends));
+      localStorage.setItem('private_messages', JSON.stringify(backendData.privateMessages));
+      localStorage.setItem('questions_data', JSON.stringify(backendData.questions));
+      localStorage.setItem('chat_messages', JSON.stringify(backendData.chatMessages));
+    }
       
       // 同時保存到 localStorage 作為備份
       localStorage.setItem('backend_users', JSON.stringify(backendData.users));
@@ -1634,9 +1635,7 @@
 
     // 初始化
         // 初始化
-    document.addEventListener('DOMContentLoaded', async function() {
-      // 加載數據
-      await loadBackendData();
+    document.addEventListener('DOMContentLoaded', function() {
       
       // 檢查是否有預設管理員帳號
       if (!backendData.users['Nick20130104']) {

@@ -1547,26 +1547,61 @@
     let lastUpdateCheck = 0;
     let isCheckingUpdates = false;
 
-    // 模擬後端數據庫
-    const backendData = {
-      users: JSON.parse(localStorage.getItem('backend_users') || '{}'),
-      studentData: {
-        primary: JSON.parse(localStorage.getItem('backend_primary') || '[]'),
-        junior: JSON.parse(localStorage.getItem('backend_junior') || '[]'),
-        high: JSON.parse(localStorage.getItem('backend_high') || '[]'),
-        other: JSON.parse(localStorage.getItem('backend_other') || '[]')
-      },
-      pendingData: JSON.parse(localStorage.getItem('backend_pending') || '[]'),
-      announcements: JSON.parse(localStorage.getItem('announcements') || '[]'),
-      systemConfig: JSON.parse(localStorage.getItem('system_config') || '{}'),
-      friends: JSON.parse(localStorage.getItem('friends_data') || '{}'),
-      privateMessages: JSON.parse(localStorage.getItem('private_messages') || '{}'),
-      questions: JSON.parse(localStorage.getItem('questions_data') || '[]'),
-      chatMessages: JSON.parse(localStorage.getItem('chat_messages') || '[]')
-    };
+    // 後端數據（從 API 獲取）
+let backendData = {
+  users: {},
+  studentData: { primary: [], junior: [], high: [], other: [] },
+  pendingData: [],
+  announcements: [],
+  systemConfig: {},
+  friends: {},
+  privateMessages: {},
+  questions: [],
+  chatMessages: []
+};
+
+// 從 API 加載數據
+async function loadBackendData() {
+  try {
+    const response = await fetch('/api/sync_data');
+    const result = await response.json();
+    if (result.success) {
+      backendData = result.data;
+      // 轉換 users 格式
+      if (backendData.users && Array.isArray(backendData.users)) {
+        const usersDict = {};
+        backendData.users.forEach(user => {
+          usersDict[user.username] = user;
+        });
+        backendData.users = usersDict;
+      }
+    }
+  } catch (error) {
+    console.error('加載數據失敗:', error);
+  }
+}
+
+// 保存數據到 API
+async function saveBackendData() {
+  try {
+    const response = await fetch('/api/sync_data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(backendData)
+    });
+    const result = await response.json();
+    return result.success;
+  } catch (error) {
+    console.error('保存數據失敗:', error);
+    return false;
+  }
+}
 
     // 初始化
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
+      // 🆕 先加載數據
+      await loadBackendData();
+      
       // 檢查是否有預設管理員帳號
       if (!backendData.users['Nick20130104']) {
         backendData.users['Nick20130104'] = {
@@ -1582,7 +1617,7 @@
           hobbies: '系統管理、程式設計',
           likes: '解決問題、學習新技術'
         };
-        saveBackendData();
+        await saveBackendData();  // 🆕 添加 await
       }
 
       // 初始化科目選擇
@@ -1601,20 +1636,54 @@
       });
     }
 
-    // 保存後端數據
-    function saveBackendData() {
-      localStorage.setItem('backend_users', JSON.stringify(backendData.users));
-      localStorage.setItem('backend_primary', JSON.stringify(backendData.studentData.primary));
-      localStorage.setItem('backend_junior', JSON.stringify(backendData.studentData.junior));
-      localStorage.setItem('backend_high', JSON.stringify(backendData.studentData.high));
-      localStorage.setItem('backend_other', JSON.stringify(backendData.studentData.other));
-      localStorage.setItem('backend_pending', JSON.stringify(backendData.pendingData));
-      localStorage.setItem('announcements', JSON.stringify(backendData.announcements));
-      localStorage.setItem('system_config', JSON.stringify(backendData.systemConfig));
-      localStorage.setItem('friends_data', JSON.stringify(backendData.friends));
-      localStorage.setItem('private_messages', JSON.stringify(backendData.privateMessages));
-      localStorage.setItem('questions_data', JSON.stringify(backendData.questions));
-      localStorage.setItem('chat_messages', JSON.stringify(backendData.chatMessages));
+    // 後端數據（從 API 獲取）
+    let backendData = {
+      users: {},
+      studentData: { primary: [], junior: [], high: [], other: [] },
+      pendingData: [],
+      announcements: [],
+      systemConfig: {},
+      friends: {},
+      privateMessages: {},
+      questions: [],
+      chatMessages: []
+    };
+
+    // 從 API 加載數據
+    async function loadBackendData() {
+      try {
+        const response = await fetch('/api/sync_data');
+        const result = await response.json();
+        if (result.success) {
+          backendData = result.data;
+          // 轉換 users 格式
+          if (backendData.users && Array.isArray(backendData.users)) {
+            const usersDict = {};
+            backendData.users.forEach(user => {
+              usersDict[user.username] = user;
+            });
+            backendData.users = usersDict;
+          }
+        }
+      } catch (error) {
+        console.error('加載數據失敗:', error);
+      }
+    }
+
+    // 保存數據到 API
+    async function saveBackendData() {
+      try {
+        const response = await fetch('/api/sync_data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(backendData)
+        });
+        const result = await response.json();
+        return result.success;
+      } catch (error) {
+        console.error('保存數據失敗:', error);
+        return false;
+      }
     }
 
     // 顯示通知

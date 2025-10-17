@@ -1681,16 +1681,1080 @@
 
     // 初始化科目標籤
     function initSubjectTags() {
-      const tags = document.querySelectorAll('.subject-tag');
-      tags.forEach(tag => {
-        tag.addEventListener('click', function() {
-          tags.forEach(t => t.classList.remove('selected'));
-          this.classList.add('selected');
-          document.getElementById('selected-subject').value = this.dataset.subject;
-        });
-      });
+    // 模擬後端數據庫
+    const backendData = {
+      users: JSON.parse(localStorage.getItem('backend_users') || '{}'),
+      studentData: {
+        primary: JSON.parse(localStorage.getItem('backend_primary') || '[]'),
+        junior: JSON.parse(localStorage.getItem('backend_junior') || '[]'),
+        high: JSON.parse(localStorage.getItem('backend_high') || '[]'),
+        other: JSON.parse(localStorage.getItem('backend_other') || '[]')
+      },
+      pendingData: JSON.parse(localStorage.getItem('backend_pending') || '[]'),
+      announcements: JSON.parse(localStorage.getItem('announcements') || '[]'),
+      systemConfig: JSON.parse(localStorage.getItem('system_config') || '{}'),
+      friends: JSON.parse(localStorage.getItem('friends_data') || '{}'),
+      privateMessages: JSON.parse(localStorage.getItem('private_messages') || '{}'),
+      questions: JSON.parse(localStorage.getItem('questions_data') || '[]'),
+      chatMessages: JSON.parse(localStorage.getItem('chat_messages') || '[]')
+    };
+
+    // 顯示註冊頁面
+    function showRegister() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('register-screen').style.display = 'flex';
     }
 
-    // 後端數據（從 API 獲取）
+    // 顯示管理員登入頁面
+    function showAdminLogin() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-login-screen').style.display = 'flex';
+    }
 
+    // 隱藏管理員登入頁面
+    function hideAdminLogin() {
+      document.getElementById('admin-login-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 隱藏註冊頁面
+    function hideRegister() {
+      document.getElementById('register-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 登入功能
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      
+      if (!username || !password) {
+        errorMsg.textContent = '請輸入帳號和密碼';
+        return;
+      }
+      
+      const user = backendData.users[username];
+      
+      if (user && user.password === password) {
+        currentUser = username;
+        isAdmin = user.isAdmin || false;
+        
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'block';
+        document.getElementById('current-user-name').textContent = user.name;
+        
+        if (isAdmin) {
+          document.getElementById('admin-badge').style.display = 'inline-block';
+          document.getElementById('admin-tools').style.display = 'block';
+          document.getElementById('review-btn').style.display = 'block';
+          document.getElementById('statistics-btn').style.display = 'block';
+        }
+        
+        loadContent('dashboard');
+        showNotification(`歡迎回來，${user.name}！`, 'success');
+      } else {
+        errorMsg.textContent = '帳號或密碼錯誤';
+      }
+    }
+      const tags = document.querySelectorAll('.subject-tag');
+    // 模擬後端數據庫
+    const backendData = {
+      users: JSON.parse(localStorage.getItem('backend_users') || '{}'),
+      studentData: {
+        primary: JSON.parse(localStorage.getItem('backend_primary') || '[]'),
+        junior: JSON.parse(localStorage.getItem('backend_junior') || '[]'),
+        high: JSON.parse(localStorage.getItem('backend_high') || '[]'),
+        other: JSON.parse(localStorage.getItem('backend_other') || '[]')
+      },
+      pendingData: JSON.parse(localStorage.getItem('backend_pending') || '[]'),
+      announcements: JSON.parse(localStorage.getItem('announcements') || '[]'),
+      systemConfig: JSON.parse(localStorage.getItem('system_config') || '{}'),
+      friends: JSON.parse(localStorage.getItem('friends_data') || '{}'),
+      privateMessages: JSON.parse(localStorage.getItem('private_messages') || '{}'),
+      questions: JSON.parse(localStorage.getItem('questions_data') || '[]'),
+      chatMessages: JSON.parse(localStorage.getItem('chat_messages') || '[]')
+    };
+
+    // 顯示註冊頁面
+    function showRegister() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('register-screen').style.display = 'flex';
+    }
+
+    // 顯示管理員登入頁面
+    function showAdminLogin() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-login-screen').style.display = 'flex';
+    }
+
+    // 隱藏管理員登入頁面
+    function hideAdminLogin() {
+      document.getElementById('admin-login-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 隱藏註冊頁面
+    function hideRegister() {
+      document.getElementById('register-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 登入功能
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      
+      if (!username || !password) {
+        errorMsg.textContent = '請輸入帳號和密碼';
+        return;
+      }
+      
+      const user = backendData.users[username];
+      
+      if (user && user.password === password) {
+        currentUser = username;
+        isAdmin = user.isAdmin || false;
+        
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'block';
+        document.getElementById('current-user-name').textContent = user.name;
+        
+        if (isAdmin) {
+          document.getElementById('admin-badge').style.display = 'inline-block';
+          document.getElementById('admin-tools').style.display = 'block';
+          document.getElementById('review-btn').style.display = 'block';
+          document.getElementById('statistics-btn').style.display = 'block';
+        }
+        
+        loadContent('dashboard');
+        showNotification(`歡迎回來，${user.name}！`, 'success');
+      } else {
+        errorMsg.textContent = '帳號或密碼錯誤';
+      }
+    }
+      tags.forEach(tag => {
+    // 模擬後端數據庫
+    const backendData = {
+      users: JSON.parse(localStorage.getItem('backend_users') || '{}'),
+      studentData: {
+        primary: JSON.parse(localStorage.getItem('backend_primary') || '[]'),
+        junior: JSON.parse(localStorage.getItem('backend_junior') || '[]'),
+        high: JSON.parse(localStorage.getItem('backend_high') || '[]'),
+        other: JSON.parse(localStorage.getItem('backend_other') || '[]')
+      },
+      pendingData: JSON.parse(localStorage.getItem('backend_pending') || '[]'),
+      announcements: JSON.parse(localStorage.getItem('announcements') || '[]'),
+      systemConfig: JSON.parse(localStorage.getItem('system_config') || '{}'),
+      friends: JSON.parse(localStorage.getItem('friends_data') || '{}'),
+      privateMessages: JSON.parse(localStorage.getItem('private_messages') || '{}'),
+      questions: JSON.parse(localStorage.getItem('questions_data') || '[]'),
+      chatMessages: JSON.parse(localStorage.getItem('chat_messages') || '[]')
+    };
+
+    // 顯示註冊頁面
+    function showRegister() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('register-screen').style.display = 'flex';
+    }
+
+    // 顯示管理員登入頁面
+    function showAdminLogin() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-login-screen').style.display = 'flex';
+    }
+
+    // 隱藏管理員登入頁面
+    function hideAdminLogin() {
+      document.getElementById('admin-login-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 隱藏註冊頁面
+    function hideRegister() {
+      document.getElementById('register-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 登入功能
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      
+      if (!username || !password) {
+        errorMsg.textContent = '請輸入帳號和密碼';
+        return;
+      }
+      
+      const user = backendData.users[username];
+      
+      if (user && user.password === password) {
+        currentUser = username;
+        isAdmin = user.isAdmin || false;
+        
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'block';
+        document.getElementById('current-user-name').textContent = user.name;
+        
+        if (isAdmin) {
+          document.getElementById('admin-badge').style.display = 'inline-block';
+          document.getElementById('admin-tools').style.display = 'block';
+          document.getElementById('review-btn').style.display = 'block';
+          document.getElementById('statistics-btn').style.display = 'block';
+        }
+        
+        loadContent('dashboard');
+        showNotification(`歡迎回來，${user.name}！`, 'success');
+      } else {
+        errorMsg.textContent = '帳號或密碼錯誤';
+      }
+    }
+        tag.addEventListener('click', function() {
+    // 模擬後端數據庫
+    const backendData = {
+      users: JSON.parse(localStorage.getItem('backend_users') || '{}'),
+      studentData: {
+        primary: JSON.parse(localStorage.getItem('backend_primary') || '[]'),
+        junior: JSON.parse(localStorage.getItem('backend_junior') || '[]'),
+        high: JSON.parse(localStorage.getItem('backend_high') || '[]'),
+        other: JSON.parse(localStorage.getItem('backend_other') || '[]')
+      },
+      pendingData: JSON.parse(localStorage.getItem('backend_pending') || '[]'),
+      announcements: JSON.parse(localStorage.getItem('announcements') || '[]'),
+      systemConfig: JSON.parse(localStorage.getItem('system_config') || '{}'),
+      friends: JSON.parse(localStorage.getItem('friends_data') || '{}'),
+      privateMessages: JSON.parse(localStorage.getItem('private_messages') || '{}'),
+      questions: JSON.parse(localStorage.getItem('questions_data') || '[]'),
+      chatMessages: JSON.parse(localStorage.getItem('chat_messages') || '[]')
+    };
+
+    // 顯示註冊頁面
+    function showRegister() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('register-screen').style.display = 'flex';
+    }
+
+    // 顯示管理員登入頁面
+    function showAdminLogin() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-login-screen').style.display = 'flex';
+    }
+
+    // 隱藏管理員登入頁面
+    function hideAdminLogin() {
+      document.getElementById('admin-login-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 隱藏註冊頁面
+    function hideRegister() {
+      document.getElementById('register-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 登入功能
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      
+      if (!username || !password) {
+        errorMsg.textContent = '請輸入帳號和密碼';
+        return;
+      }
+      
+      const user = backendData.users[username];
+      
+      if (user && user.password === password) {
+        currentUser = username;
+        isAdmin = user.isAdmin || false;
+        
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'block';
+        document.getElementById('current-user-name').textContent = user.name;
+        
+        if (isAdmin) {
+          document.getElementById('admin-badge').style.display = 'inline-block';
+          document.getElementById('admin-tools').style.display = 'block';
+          document.getElementById('review-btn').style.display = 'block';
+          document.getElementById('statistics-btn').style.display = 'block';
+        }
+        
+        loadContent('dashboard');
+        showNotification(`歡迎回來，${user.name}！`, 'success');
+      } else {
+        errorMsg.textContent = '帳號或密碼錯誤';
+      }
+    }
+          tags.forEach(t => t.classList.remove('selected'));
+    // 模擬後端數據庫
+    const backendData = {
+      users: JSON.parse(localStorage.getItem('backend_users') || '{}'),
+      studentData: {
+        primary: JSON.parse(localStorage.getItem('backend_primary') || '[]'),
+        junior: JSON.parse(localStorage.getItem('backend_junior') || '[]'),
+        high: JSON.parse(localStorage.getItem('backend_high') || '[]'),
+        other: JSON.parse(localStorage.getItem('backend_other') || '[]')
+      },
+      pendingData: JSON.parse(localStorage.getItem('backend_pending') || '[]'),
+      announcements: JSON.parse(localStorage.getItem('announcements') || '[]'),
+      systemConfig: JSON.parse(localStorage.getItem('system_config') || '{}'),
+      friends: JSON.parse(localStorage.getItem('friends_data') || '{}'),
+      privateMessages: JSON.parse(localStorage.getItem('private_messages') || '{}'),
+      questions: JSON.parse(localStorage.getItem('questions_data') || '[]'),
+      chatMessages: JSON.parse(localStorage.getItem('chat_messages') || '[]')
+    };
+
+    // 顯示註冊頁面
+    function showRegister() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('register-screen').style.display = 'flex';
+    }
+
+    // 顯示管理員登入頁面
+    function showAdminLogin() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-login-screen').style.display = 'flex';
+    }
+
+    // 隱藏管理員登入頁面
+    function hideAdminLogin() {
+      document.getElementById('admin-login-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 隱藏註冊頁面
+    function hideRegister() {
+      document.getElementById('register-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 登入功能
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      
+      if (!username || !password) {
+        errorMsg.textContent = '請輸入帳號和密碼';
+        return;
+      }
+      
+      const user = backendData.users[username];
+      
+      if (user && user.password === password) {
+        currentUser = username;
+        isAdmin = user.isAdmin || false;
+        
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'block';
+        document.getElementById('current-user-name').textContent = user.name;
+        
+        if (isAdmin) {
+          document.getElementById('admin-badge').style.display = 'inline-block';
+          document.getElementById('admin-tools').style.display = 'block';
+          document.getElementById('review-btn').style.display = 'block';
+          document.getElementById('statistics-btn').style.display = 'block';
+        }
+        
+        loadContent('dashboard');
+        showNotification(`歡迎回來，${user.name}！`, 'success');
+      } else {
+        errorMsg.textContent = '帳號或密碼錯誤';
+      }
+    }
+          this.classList.add('selected');
+    // 模擬後端數據庫
+    const backendData = {
+      users: JSON.parse(localStorage.getItem('backend_users') || '{}'),
+      studentData: {
+        primary: JSON.parse(localStorage.getItem('backend_primary') || '[]'),
+        junior: JSON.parse(localStorage.getItem('backend_junior') || '[]'),
+        high: JSON.parse(localStorage.getItem('backend_high') || '[]'),
+        other: JSON.parse(localStorage.getItem('backend_other') || '[]')
+      },
+      pendingData: JSON.parse(localStorage.getItem('backend_pending') || '[]'),
+      announcements: JSON.parse(localStorage.getItem('announcements') || '[]'),
+      systemConfig: JSON.parse(localStorage.getItem('system_config') || '{}'),
+      friends: JSON.parse(localStorage.getItem('friends_data') || '{}'),
+      privateMessages: JSON.parse(localStorage.getItem('private_messages') || '{}'),
+      questions: JSON.parse(localStorage.getItem('questions_data') || '[]'),
+      chatMessages: JSON.parse(localStorage.getItem('chat_messages') || '[]')
+    };
+
+    // 顯示註冊頁面
+    function showRegister() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('register-screen').style.display = 'flex';
+    }
+
+    // 顯示管理員登入頁面
+    function showAdminLogin() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-login-screen').style.display = 'flex';
+    }
+
+    // 隱藏管理員登入頁面
+    function hideAdminLogin() {
+      document.getElementById('admin-login-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 隱藏註冊頁面
+    function hideRegister() {
+      document.getElementById('register-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 登入功能
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      
+      if (!username || !password) {
+        errorMsg.textContent = '請輸入帳號和密碼';
+        return;
+      }
+      
+      const user = backendData.users[username];
+      
+      if (user && user.password === password) {
+        currentUser = username;
+        isAdmin = user.isAdmin || false;
+        
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'block';
+        document.getElementById('current-user-name').textContent = user.name;
+        
+        if (isAdmin) {
+          document.getElementById('admin-badge').style.display = 'inline-block';
+          document.getElementById('admin-tools').style.display = 'block';
+          document.getElementById('review-btn').style.display = 'block';
+          document.getElementById('statistics-btn').style.display = 'block';
+        }
+        
+        loadContent('dashboard');
+        showNotification(`歡迎回來，${user.name}！`, 'success');
+      } else {
+        errorMsg.textContent = '帳號或密碼錯誤';
+      }
+    }
+          document.getElementById('selected-subject').value = this.dataset.subject;
+    // 模擬後端數據庫
+    const backendData = {
+      users: JSON.parse(localStorage.getItem('backend_users') || '{}'),
+      studentData: {
+        primary: JSON.parse(localStorage.getItem('backend_primary') || '[]'),
+        junior: JSON.parse(localStorage.getItem('backend_junior') || '[]'),
+        high: JSON.parse(localStorage.getItem('backend_high') || '[]'),
+        other: JSON.parse(localStorage.getItem('backend_other') || '[]')
+      },
+      pendingData: JSON.parse(localStorage.getItem('backend_pending') || '[]'),
+      announcements: JSON.parse(localStorage.getItem('announcements') || '[]'),
+      systemConfig: JSON.parse(localStorage.getItem('system_config') || '{}'),
+      friends: JSON.parse(localStorage.getItem('friends_data') || '{}'),
+      privateMessages: JSON.parse(localStorage.getItem('private_messages') || '{}'),
+      questions: JSON.parse(localStorage.getItem('questions_data') || '[]'),
+      chatMessages: JSON.parse(localStorage.getItem('chat_messages') || '[]')
+    };
+
+    // 顯示註冊頁面
+    function showRegister() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('register-screen').style.display = 'flex';
+    }
+
+    // 顯示管理員登入頁面
+    function showAdminLogin() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-login-screen').style.display = 'flex';
+    }
+
+    // 隱藏管理員登入頁面
+    function hideAdminLogin() {
+      document.getElementById('admin-login-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 隱藏註冊頁面
+    function hideRegister() {
+      document.getElementById('register-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 登入功能
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      
+      if (!username || !password) {
+        errorMsg.textContent = '請輸入帳號和密碼';
+        return;
+      }
+      
+      const user = backendData.users[username];
+      
+      if (user && user.password === password) {
+        currentUser = username;
+        isAdmin = user.isAdmin || false;
+        
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'block';
+        document.getElementById('current-user-name').textContent = user.name;
+        
+        if (isAdmin) {
+          document.getElementById('admin-badge').style.display = 'inline-block';
+          document.getElementById('admin-tools').style.display = 'block';
+          document.getElementById('review-btn').style.display = 'block';
+          document.getElementById('statistics-btn').style.display = 'block';
+        }
+        
+        loadContent('dashboard');
+        showNotification(`歡迎回來，${user.name}！`, 'success');
+      } else {
+        errorMsg.textContent = '帳號或密碼錯誤';
+      }
+    }
+        });
+    // 模擬後端數據庫
+    const backendData = {
+      users: JSON.parse(localStorage.getItem('backend_users') || '{}'),
+      studentData: {
+        primary: JSON.parse(localStorage.getItem('backend_primary') || '[]'),
+        junior: JSON.parse(localStorage.getItem('backend_junior') || '[]'),
+        high: JSON.parse(localStorage.getItem('backend_high') || '[]'),
+        other: JSON.parse(localStorage.getItem('backend_other') || '[]')
+      },
+      pendingData: JSON.parse(localStorage.getItem('backend_pending') || '[]'),
+      announcements: JSON.parse(localStorage.getItem('announcements') || '[]'),
+      systemConfig: JSON.parse(localStorage.getItem('system_config') || '{}'),
+      friends: JSON.parse(localStorage.getItem('friends_data') || '{}'),
+      privateMessages: JSON.parse(localStorage.getItem('private_messages') || '{}'),
+      questions: JSON.parse(localStorage.getItem('questions_data') || '[]'),
+      chatMessages: JSON.parse(localStorage.getItem('chat_messages') || '[]')
+    };
+
+    // 顯示註冊頁面
+    function showRegister() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('register-screen').style.display = 'flex';
+    }
+
+    // 顯示管理員登入頁面
+    function showAdminLogin() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-login-screen').style.display = 'flex';
+    }
+
+    // 隱藏管理員登入頁面
+    function hideAdminLogin() {
+      document.getElementById('admin-login-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 隱藏註冊頁面
+    function hideRegister() {
+      document.getElementById('register-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 登入功能
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      
+      if (!username || !password) {
+        errorMsg.textContent = '請輸入帳號和密碼';
+        return;
+      }
+      
+      const user = backendData.users[username];
+      
+      if (user && user.password === password) {
+        currentUser = username;
+        isAdmin = user.isAdmin || false;
+        
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'block';
+        document.getElementById('current-user-name').textContent = user.name;
+        
+        if (isAdmin) {
+          document.getElementById('admin-badge').style.display = 'inline-block';
+          document.getElementById('admin-tools').style.display = 'block';
+          document.getElementById('review-btn').style.display = 'block';
+          document.getElementById('statistics-btn').style.display = 'block';
+        }
+        
+        loadContent('dashboard');
+        showNotification(`歡迎回來，${user.name}！`, 'success');
+      } else {
+        errorMsg.textContent = '帳號或密碼錯誤';
+      }
+    }
+      });
+    // 模擬後端數據庫
+    const backendData = {
+      users: JSON.parse(localStorage.getItem('backend_users') || '{}'),
+      studentData: {
+        primary: JSON.parse(localStorage.getItem('backend_primary') || '[]'),
+        junior: JSON.parse(localStorage.getItem('backend_junior') || '[]'),
+        high: JSON.parse(localStorage.getItem('backend_high') || '[]'),
+        other: JSON.parse(localStorage.getItem('backend_other') || '[]')
+      },
+      pendingData: JSON.parse(localStorage.getItem('backend_pending') || '[]'),
+      announcements: JSON.parse(localStorage.getItem('announcements') || '[]'),
+      systemConfig: JSON.parse(localStorage.getItem('system_config') || '{}'),
+      friends: JSON.parse(localStorage.getItem('friends_data') || '{}'),
+      privateMessages: JSON.parse(localStorage.getItem('private_messages') || '{}'),
+      questions: JSON.parse(localStorage.getItem('questions_data') || '[]'),
+      chatMessages: JSON.parse(localStorage.getItem('chat_messages') || '[]')
+    };
+
+    // 顯示註冊頁面
+    function showRegister() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('register-screen').style.display = 'flex';
+    }
+
+    // 顯示管理員登入頁面
+    function showAdminLogin() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-login-screen').style.display = 'flex';
+    }
+
+    // 隱藏管理員登入頁面
+    function hideAdminLogin() {
+      document.getElementById('admin-login-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 隱藏註冊頁面
+    function hideRegister() {
+      document.getElementById('register-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 登入功能
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      
+      if (!username || !password) {
+        errorMsg.textContent = '請輸入帳號和密碼';
+        return;
+      }
+      
+      const user = backendData.users[username];
+      
+      if (user && user.password === password) {
+        currentUser = username;
+        isAdmin = user.isAdmin || false;
+        
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'block';
+        document.getElementById('current-user-name').textContent = user.name;
+        
+        if (isAdmin) {
+          document.getElementById('admin-badge').style.display = 'inline-block';
+          document.getElementById('admin-tools').style.display = 'block';
+          document.getElementById('review-btn').style.display = 'block';
+          document.getElementById('statistics-btn').style.display = 'block';
+        }
+        
+        loadContent('dashboard');
+        showNotification(`歡迎回來，${user.name}！`, 'success');
+      } else {
+        errorMsg.textContent = '帳號或密碼錯誤';
+      }
+    }
+    }
+    // 模擬後端數據庫
+    const backendData = {
+      users: JSON.parse(localStorage.getItem('backend_users') || '{}'),
+      studentData: {
+        primary: JSON.parse(localStorage.getItem('backend_primary') || '[]'),
+        junior: JSON.parse(localStorage.getItem('backend_junior') || '[]'),
+        high: JSON.parse(localStorage.getItem('backend_high') || '[]'),
+        other: JSON.parse(localStorage.getItem('backend_other') || '[]')
+      },
+      pendingData: JSON.parse(localStorage.getItem('backend_pending') || '[]'),
+      announcements: JSON.parse(localStorage.getItem('announcements') || '[]'),
+      systemConfig: JSON.parse(localStorage.getItem('system_config') || '{}'),
+      friends: JSON.parse(localStorage.getItem('friends_data') || '{}'),
+      privateMessages: JSON.parse(localStorage.getItem('private_messages') || '{}'),
+      questions: JSON.parse(localStorage.getItem('questions_data') || '[]'),
+      chatMessages: JSON.parse(localStorage.getItem('chat_messages') || '[]')
+    };
+
+    // 顯示註冊頁面
+    function showRegister() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('register-screen').style.display = 'flex';
+    }
+
+    // 顯示管理員登入頁面
+    function showAdminLogin() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-login-screen').style.display = 'flex';
+    }
+
+    // 隱藏管理員登入頁面
+    function hideAdminLogin() {
+      document.getElementById('admin-login-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 隱藏註冊頁面
+    function hideRegister() {
+      document.getElementById('register-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 登入功能
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      
+      if (!username || !password) {
+        errorMsg.textContent = '請輸入帳號和密碼';
+        return;
+      }
+      
+      const user = backendData.users[username];
+      
+      if (user && user.password === password) {
+        currentUser = username;
+        isAdmin = user.isAdmin || false;
+        
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'block';
+        document.getElementById('current-user-name').textContent = user.name;
+        
+        if (isAdmin) {
+          document.getElementById('admin-badge').style.display = 'inline-block';
+          document.getElementById('admin-tools').style.display = 'block';
+          document.getElementById('review-btn').style.display = 'block';
+          document.getElementById('statistics-btn').style.display = 'block';
+        }
+        
+        loadContent('dashboard');
+        showNotification(`歡迎回來，${user.name}！`, 'success');
+      } else {
+        errorMsg.textContent = '帳號或密碼錯誤';
+      }
+    }
+
+    // 模擬後端數據庫
+    const backendData = {
+      users: JSON.parse(localStorage.getItem('backend_users') || '{}'),
+      studentData: {
+        primary: JSON.parse(localStorage.getItem('backend_primary') || '[]'),
+        junior: JSON.parse(localStorage.getItem('backend_junior') || '[]'),
+        high: JSON.parse(localStorage.getItem('backend_high') || '[]'),
+        other: JSON.parse(localStorage.getItem('backend_other') || '[]')
+      },
+      pendingData: JSON.parse(localStorage.getItem('backend_pending') || '[]'),
+      announcements: JSON.parse(localStorage.getItem('announcements') || '[]'),
+      systemConfig: JSON.parse(localStorage.getItem('system_config') || '{}'),
+      friends: JSON.parse(localStorage.getItem('friends_data') || '{}'),
+      privateMessages: JSON.parse(localStorage.getItem('private_messages') || '{}'),
+      questions: JSON.parse(localStorage.getItem('questions_data') || '[]'),
+      chatMessages: JSON.parse(localStorage.getItem('chat_messages') || '[]')
+    };
+
+    // 顯示註冊頁面
+    function showRegister() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('register-screen').style.display = 'flex';
+    }
+
+    // 顯示管理員登入頁面
+    function showAdminLogin() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-login-screen').style.display = 'flex';
+    }
+
+    // 隱藏管理員登入頁面
+    function hideAdminLogin() {
+      document.getElementById('admin-login-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 隱藏註冊頁面
+    function hideRegister() {
+      document.getElementById('register-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 登入功能
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      
+      if (!username || !password) {
+        errorMsg.textContent = '請輸入帳號和密碼';
+        return;
+      }
+      
+      const user = backendData.users[username];
+      
+      if (user && user.password === password) {
+        currentUser = username;
+        isAdmin = user.isAdmin || false;
+        
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'block';
+        document.getElementById('current-user-name').textContent = user.name;
+        
+        if (isAdmin) {
+          document.getElementById('admin-badge').style.display = 'inline-block';
+          document.getElementById('admin-tools').style.display = 'block';
+          document.getElementById('review-btn').style.display = 'block';
+          document.getElementById('statistics-btn').style.display = 'block';
+        }
+        
+        loadContent('dashboard');
+        showNotification(`歡迎回來，${user.name}！`, 'success');
+      } else {
+        errorMsg.textContent = '帳號或密碼錯誤';
+      }
+    }
+    // 後端數據（從 API 獲取）
+    // 模擬後端數據庫
+    const backendData = {
+      users: JSON.parse(localStorage.getItem('backend_users') || '{}'),
+      studentData: {
+        primary: JSON.parse(localStorage.getItem('backend_primary') || '[]'),
+        junior: JSON.parse(localStorage.getItem('backend_junior') || '[]'),
+        high: JSON.parse(localStorage.getItem('backend_high') || '[]'),
+        other: JSON.parse(localStorage.getItem('backend_other') || '[]')
+      },
+      pendingData: JSON.parse(localStorage.getItem('backend_pending') || '[]'),
+      announcements: JSON.parse(localStorage.getItem('announcements') || '[]'),
+      systemConfig: JSON.parse(localStorage.getItem('system_config') || '{}'),
+      friends: JSON.parse(localStorage.getItem('friends_data') || '{}'),
+      privateMessages: JSON.parse(localStorage.getItem('private_messages') || '{}'),
+      questions: JSON.parse(localStorage.getItem('questions_data') || '[]'),
+      chatMessages: JSON.parse(localStorage.getItem('chat_messages') || '[]')
+    };
+
+    // 顯示註冊頁面
+    function showRegister() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('register-screen').style.display = 'flex';
+    }
+
+    // 顯示管理員登入頁面
+    function showAdminLogin() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-login-screen').style.display = 'flex';
+    }
+
+    // 隱藏管理員登入頁面
+    function hideAdminLogin() {
+      document.getElementById('admin-login-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 隱藏註冊頁面
+    function hideRegister() {
+      document.getElementById('register-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 登入功能
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      
+      if (!username || !password) {
+        errorMsg.textContent = '請輸入帳號和密碼';
+        return;
+      }
+      
+      const user = backendData.users[username];
+      
+      if (user && user.password === password) {
+        currentUser = username;
+        isAdmin = user.isAdmin || false;
+        
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'block';
+        document.getElementById('current-user-name').textContent = user.name;
+        
+        if (isAdmin) {
+          document.getElementById('admin-badge').style.display = 'inline-block';
+          document.getElementById('admin-tools').style.display = 'block';
+          document.getElementById('review-btn').style.display = 'block';
+          document.getElementById('statistics-btn').style.display = 'block';
+        }
+        
+        loadContent('dashboard');
+        showNotification(`歡迎回來，${user.name}！`, 'success');
+      } else {
+        errorMsg.textContent = '帳號或密碼錯誤';
+      }
+    }
+
+    // 模擬後端數據庫
+    const backendData = {
+      users: JSON.parse(localStorage.getItem('backend_users') || '{}'),
+      studentData: {
+        primary: JSON.parse(localStorage.getItem('backend_primary') || '[]'),
+        junior: JSON.parse(localStorage.getItem('backend_junior') || '[]'),
+        high: JSON.parse(localStorage.getItem('backend_high') || '[]'),
+        other: JSON.parse(localStorage.getItem('backend_other') || '[]')
+      },
+      pendingData: JSON.parse(localStorage.getItem('backend_pending') || '[]'),
+      announcements: JSON.parse(localStorage.getItem('announcements') || '[]'),
+      systemConfig: JSON.parse(localStorage.getItem('system_config') || '{}'),
+      friends: JSON.parse(localStorage.getItem('friends_data') || '{}'),
+      privateMessages: JSON.parse(localStorage.getItem('private_messages') || '{}'),
+      questions: JSON.parse(localStorage.getItem('questions_data') || '[]'),
+      chatMessages: JSON.parse(localStorage.getItem('chat_messages') || '[]')
+    };
+
+    // 顯示註冊頁面
+    function showRegister() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('register-screen').style.display = 'flex';
+    }
+
+    // 顯示管理員登入頁面
+    function showAdminLogin() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-login-screen').style.display = 'flex';
+    }
+
+    // 隱藏管理員登入頁面
+    function hideAdminLogin() {
+      document.getElementById('admin-login-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 隱藏註冊頁面
+    function hideRegister() {
+      document.getElementById('register-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 登入功能
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      
+      if (!username || !password) {
+        errorMsg.textContent = '請輸入帳號和密碼';
+        return;
+      }
+      
+      const user = backendData.users[username];
+      
+      if (user && user.password === password) {
+        currentUser = username;
+        isAdmin = user.isAdmin || false;
+        
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'block';
+        document.getElementById('current-user-name').textContent = user.name;
+        
+        if (isAdmin) {
+          document.getElementById('admin-badge').style.display = 'inline-block';
+          document.getElementById('admin-tools').style.display = 'block';
+          document.getElementById('review-btn').style.display = 'block';
+          document.getElementById('statistics-btn').style.display = 'block';
+        }
+        
+        loadContent('dashboard');
+        showNotification(`歡迎回來，${user.name}！`, 'success');
+      } else {
+        errorMsg.textContent = '帳號或密碼錯誤';
+      }
+    }
     // 從 API 加載數據
+    // 模擬後端數據庫
+    const backendData = {
+      users: JSON.parse(localStorage.getItem('backend_users') || '{}'),
+      studentData: {
+        primary: JSON.parse(localStorage.getItem('backend_primary') || '[]'),
+        junior: JSON.parse(localStorage.getItem('backend_junior') || '[]'),
+        high: JSON.parse(localStorage.getItem('backend_high') || '[]'),
+        other: JSON.parse(localStorage.getItem('backend_other') || '[]')
+      },
+      pendingData: JSON.parse(localStorage.getItem('backend_pending') || '[]'),
+      announcements: JSON.parse(localStorage.getItem('announcements') || '[]'),
+      systemConfig: JSON.parse(localStorage.getItem('system_config') || '{}'),
+      friends: JSON.parse(localStorage.getItem('friends_data') || '{}'),
+      privateMessages: JSON.parse(localStorage.getItem('private_messages') || '{}'),
+      questions: JSON.parse(localStorage.getItem('questions_data') || '[]'),
+      chatMessages: JSON.parse(localStorage.getItem('chat_messages') || '[]')
+    };
+
+    // 顯示註冊頁面
+    function showRegister() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('register-screen').style.display = 'flex';
+    }
+
+    // 顯示管理員登入頁面
+    function showAdminLogin() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-login-screen').style.display = 'flex';
+    }
+
+    // 隱藏管理員登入頁面
+    function hideAdminLogin() {
+      document.getElementById('admin-login-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 隱藏註冊頁面
+    function hideRegister() {
+      document.getElementById('register-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 登入功能
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      
+      if (!username || !password) {
+        errorMsg.textContent = '請輸入帳號和密碼';
+        return;
+      }
+      
+      const user = backendData.users[username];
+      
+      if (user && user.password === password) {
+        currentUser = username;
+        isAdmin = user.isAdmin || false;
+        
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'block';
+        document.getElementById('current-user-name').textContent = user.name;
+        
+        if (isAdmin) {
+          document.getElementById('admin-badge').style.display = 'inline-block';
+          document.getElementById('admin-tools').style.display = 'block';
+          document.getElementById('review-btn').style.display = 'block';
+          document.getElementById('statistics-btn').style.display = 'block';
+        }
+        
+        loadContent('dashboard');
+        showNotification(`歡迎回來，${user.name}！`, 'success');
+      } else {
+        errorMsg.textContent = '帳號或密碼錯誤';
+      }
+    }

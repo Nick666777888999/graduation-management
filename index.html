@@ -1569,9 +1569,9 @@
 
     // 從 API 加載數據，失敗時使用 localStorage
         // 先嘗試從 API 加載
-        const response = await fetch('/api/sync_data');
+        const response = fetch('/api/sync_data');
         if (response.ok) {
-          const result = await response.json();
+          const result = response.json();
           if (result.success) {
             backendData = result.data;
             console.log('從 API 加載數據成功');
@@ -1672,7 +1672,7 @@
           hobbies: '系統管理、程式設計',
           likes: '解決問題、學習新技術'
         };
-        await saveBackendData();
+        saveBackendData();
       }
 
       // 初始化科目選擇
@@ -1716,14 +1716,14 @@
     }
 
     // 保存數據到 API
-    async function saveBackendData() {
+    function saveBackendData() {
       try {
-        const response = await fetch('/api/sync_data', {
+        const response = fetch('/api/sync_data', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(backendData)
         });
-        const result = await response.json();
+        const result = response.json();
         return result.success;
       } catch (error) {
         console.error('保存數據失敗:', error);
@@ -1867,12 +1867,12 @@
     }
 
     // 檢查更新 - 修復版本
-    async function checkForUpdates() {
+    function checkForUpdates() {
       if (!currentUser || isCheckingUpdates) return;
       
       isCheckingUpdates = true;
       try {
-        const updates = await simulateCheckUpdates();
+        const updates = simulateCheckUpdates();
         if (updates && !updates.no_updates) {
           handleUpdates(updates);
         }

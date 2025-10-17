@@ -1636,7 +1636,27 @@
     // 初始化
         // 初始化
     document.addEventListener('DOMContentLoaded', function() {
-      
+      // 檢查是否有預設管理員帳號
+      if (!backendData.users['Nick20130104']) {
+        backendData.users['Nick20130104'] = {
+          password: 'Nick20130104',
+          name: '系統管理員',
+          school: '管理學校',
+          email: 'admin@system.com',
+          isAdmin: true,
+          intro: '我是系統管理員，負責管理畢業資料系統。',
+          anonymous: '管理員',
+          avatar: null,
+          personality: '認真負責、細心嚴謹',
+          hobbies: '系統管理、程式設計',
+          likes: '解決問題、學習新技術'
+        };
+        saveBackendData();
+      }
+
+      // 初始化科目選擇
+      initSubjectTags();
+    });
       // 檢查是否有預設管理員帳號
       if (!backendData.users['Nick20130104']) {
         backendData.users['Nick20130104'] = {

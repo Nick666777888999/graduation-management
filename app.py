@@ -605,23 +605,6 @@ def logout():
 def health_check():
     return jsonify({'status': 'healthy', 'timestamp': datetime.now().isoformat()})
 
-# ========================
-# Favicon 修復
-# ========================
-
-@app.route('/favicon.ico')
-def favicon():
-    """修復 favicon.ico 404 錯誤"""
-    from flask import Response
-    return Response(status=204)  # 返回空內容，消除 404 錯誤
-
-@app.route('/apple-touch-icon.png')
-@app.route('/apple-touch-icon-precomposed.png')
-def apple_icons():
-    """修復蘋果設備圖標 404 錯誤"""
-    from flask import Response
-    return Response(status=204)
-
 if __name__ == '__main__':
     init_db()
     port = int(os.environ.get('PORT', 5000))

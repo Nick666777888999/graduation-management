@@ -1666,44 +1666,36 @@
     }
 
     // 管理員登入
-    function adminLogin() {
-      const username = document.getElementById('admin-username').value;
-      const password = document.getElementById('admin-password').value;
-      const errorMsg = document.getElementById('admin-error-msg');
-      
-      if (!username || !password) {
-        errorMsg.textContent = '請輸入帳號和密碼';
-        return;
-      }
-      
-      if (!captchaVerified) {
-        errorMsg.textContent = '請確認您不是機器人';
-        return;
-      }
-      
-      const user = backendData.users[username];
-      
-      if (user && user.password === password && user.isAdmin) {
-        currentUser = username;
-        isAdmin = true;
-        
-        document.getElementById('admin-login-screen').style.display = 'none';
-        document.getElementById('main-screen').style.display = 'block';
-        document.getElementById('current-user-name').textContent = user.name;
-        document.getElementById('admin-badge').style.display = 'inline-block';
-        document.getElementById('admin-tools').style.display = 'block';
-        document.getElementById('review-btn').style.display = 'block';
-        document.getElementById('statistics-btn').style.display = 'block';
-        
-        loadContent('dashboard');
-        showNotification(`管理員 ${user.name} 歡迎回來！`, 'success');
-        
-        // 開始實時更新
-        startRealTimeUpdates();
-      } else {
-        errorMsg.textContent = '管理員帳號或密碼錯誤';
-      }
-    }
+function adminLogin() {
+    const username = document.getElementById("admin-username").value;
+    const password = document.getElementById("admin-password").value;
+    const errorMsg = document.getElementById("admin-error-msg");
+    
+    fetch("/api/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({username, password})
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            document.getElementById("admin-login-screen").style.display = "none";
+            currentUser = result.user;
+            isAdmin = result.user.isAdmin;
+            document.getElementById("admin-badge").style.display = "inline-block";
+            document.getElementById("admin-tools").style.display = "block";
+            showNotification("管理員登入成功", "success");
+            
+            // 載入管理員數據
+            loadAdminData();
+        } else {
+            errorMsg.textContent = result.message;
+        }
+    })
+    .catch(error => {
+        errorMsg.textContent = "登入失敗，請稍後再試";
+    });
+}
 
     // 登入功能
     function login() {

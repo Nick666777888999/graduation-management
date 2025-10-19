@@ -226,3 +226,26 @@ if 'Nick20130104' not in storage['users']:
         'intro': '我是系統管理員',
         'is_admin': True
     }
+
+@app.route('/api/import-data', methods=['POST'])
+def import_data():
+    """導入前端數據到後端"""
+    try:
+        data = request.json
+        
+        # 導入用戶數據
+        if 'users' in data:
+            storage['users'].update(data['users'])
+        
+        # 導入訊息數據  
+        if 'messages' in data:
+            storage['messages'] = data['messages']
+            
+        return jsonify({
+            'success': True,
+            'imported_users': len(data.get('users', {})),
+            'imported_messages': len(data.get('messages', []))
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500

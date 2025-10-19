@@ -4025,6 +4025,110 @@
       showNotification('系統還原功能開發中', 'info');
       closeAdminMenu();
     }
+  // ==================== 雲端同步功能 ====================
+let syncEnabled = true;
+
+// 自動同步功能
+async function syncToCloud() {
+    if (!syncEnabled) return;
+    
+    try {
+        // 準備要同步的數據
+        const syncData = {
+            users: JSON.parse(localStorage.getItem('backend_users') || '{}'),
+            messages: JSON.parse(localStorage.getItem('chat_messages') || '[]'),
+            friends: JSON.parse(localStorage.getItem('friends_data') || '{}'),
+            questions: JSON.parse(localStorage.getItem('questions_data') || '[]'),
+            announcements: JSON.parse(localStorage.getItem('announcements') || '[]'),
+            studentData: JSON.parse(localStorage.getItem('backend_primary') || '[]').concat(
+                JSON.parse(localStorage.getItem('backend_junior') || '[]'),
+                JSON.parse(localStorage.getItem('backend_high') || '[]'),
+                JSON.parse(localStorage.getItem('backend_other') || '[]')
+            )
+        };
+
+        // 發送到雲端
+        const response = await fetch('/api/sync-data', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(syncData)
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            console.log('數據同步成功');
+        }
+    } catch (error) {
+        console.log('同步失敗，但本地功能正常運作');
+    }
+}
+
+// 從雲端加載數據
+async function loadFromCloud() {
+    try {
+        const response = await fetch('/api/get-sync-data');
+        const result = await response.json();
+        
+        if (result.success) {
+            // 合併雲端數據到本地
+            if (result.users) {
+                const localUsers = JSON.parse(localStorage.getItem('backend_users') || '{}');
+                const mergedUsers = {...localUsers, ...result.users};
+                localStorage.setItem('backend_users', JSON.stringify(mergedUsers));
+            }
+            
+            if (result.messages && result.messages.length > 0) {
+                localStorage.setItem('chat_messages', JSON.stringify(result.messages));
+            }
+            
+            console.log('雲端數據加載成功');
+        }
+    } catch (error) {
+        console.log('雲端數據加載失敗，使用本地數據');
+    }
+}
+
+// 啟動同步系統
+function startSyncSystem() {
+    // 頁面載入時從雲端加載數據
+    loadFromCloud();
+    
+    // 每30秒同步一次到雲端
+    setInterval(syncToCloud, 30000);
+    
+    // 用戶操作時也同步
+    const originalSendMessage = window.sendMessage;
+    window.sendMessage = function() {
+        const result = originalSendMessage?.apply(this, arguments);
+        setTimeout(syncToCloud, 1000); // 1秒後同步
+        return result;
+    };
+    
+    console.log('雲端同步系統已啟動');
+}
+
+// 頁面載入完成後啟動同步
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startSyncSystem);
+} else {
+    startSyncSystem();
+}
+
+// 添加同步狀態指示器
+const syncIndicator = document.createElement('div');
+syncIndicator.innerHTML = '🔄 雲端同步中';
+syncIndicator.style.cssText = `
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: #27ae60;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    z-index: 10000;
+`;
+document.body.appendChild(syncIndicator);
   </script>
 </body>
 </html>

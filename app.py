@@ -604,6 +604,85 @@ def logout():
 @app.route('/api/health', methods=['GET'])
 def health_check():
     return jsonify({'status': 'healthy', 'timestamp': datetime.now().isoformat()})
+# ==================== 數據同步 API ====================
+@app.route('/api/sync-data', methods=['POST'])
+def sync_data():
+    """接收前端 localStorage 數據並同步到數據庫"""
+    try:
+        data = request.json
+        print("收到同步數據:", data.keys())
+        
+        # 同步用戶數據
+        if 'users' in data:
+            for username, user_data in data['users'].items():
+                conn = get_db_connection()
+                existing_user = conn.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
+                if not existing_user:
+                    conn.execute('''
+                        INSERT INTO users (username, password, name, school, email, intro, anonymous)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    ''', (
+                        username,
+                        'synced_password',  # 臨時密碼
+                        user_data.get('name', ''),
+                        user_data.get('school', ''),
+                        user_data.get('email', ''),
+                        user_data.get('intro', ''),
+                        user_data.get('anonymous', '')
+                    ))
+                conn.commit()
+                conn.close()
+        
+        # 同步聊天訊息
+        if 'messages' in data:
+            for message in data['messages']:
+                conn = get_db_connection()
+                existing_msg = conn.execute('SELECT * FROM messages WHERE id = ?', (message.get('id'),)).fetchone()
+                if not existing_msg:
+                    conn.execute('''
+                        INSERT INTO messages (id, sender, text, time, sender_name, is_admin)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                    ''', (
+                        message.get('id', str(uuid.uuid4())),
+                        message.get('sender', ''),
+                        message.get('text', ''),
+                        message.get('time', datetime.now().strftime('%Y/%m/%d %H:%M:%S')),
+                        message.get('sender_name', ''),
+                        message.get('is_admin', False)
+                    ))
+                conn.commit()
+                conn.close()
+        
+        return jsonify({'success': True, 'message': '數據同步成功'})
+    
+    except Exception as e:
+        print("同步錯誤:", str(e))
+        return jsonify({'success': False, 'message': f'同步失敗: {str(e)}'}), 500
+
+@app.route('/api/get-sync-data', methods=['GET'])
+def get_sync_data():
+    """獲取雲端數據供前端使用"""
+    try:
+        conn = get_db_connection()
+        
+        # 獲取用戶數據
+        users = conn.execute('SELECT * FROM users').fetchall()
+        users_dict = {user['username']: dict(user) for user in users}
+        
+        # 獲取聊天訊息
+        messages = conn.execute('SELECT * FROM messages ORDER BY timestamp DESC LIMIT 100').fetchall()
+        messages_list = [dict(msg) for msg in messages]
+        
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'users': users_dict,
+            'messages': messages_list
+        })
+    
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 if __name__ == '__main__':
     init_db()

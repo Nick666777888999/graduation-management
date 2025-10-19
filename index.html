@@ -4129,49 +4129,6 @@ syncIndicator.style.cssText = `
     z-index: 10000;
 `;
 document.body.appendChild(syncIndicator);
-// 修復重複通知問題
-
-// ==================== 修復重複通知問題 ====================
-let hasShownNewMessageNotification = false;
-
-// 登入成功處理函數
-function handleLoginSuccess(user) {
-    currentUser = user;
-    isAdmin = user.isAdmin;
-    
-    // 顯示歡迎通知
-    showNotification(`歡迎回來，${user.name}！`, 'success');
-    
-    // 重置通知狀態
-    hasShownNewMessageNotification = false;
-    
-    // 延遲檢查新訊息
-    setTimeout(checkNewMessagesOnLogin, 2000);
-    
-    // 顯示主應用（替換原有的 showApp 或類似函數）
-    document.getElementById('login-page').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    updateUserInterface();
-    loadInitialData();
-}
-
-// 登入時檢查新訊息（只顯示一次）
-function checkNewMessagesOnLogin() {
-    if (hasShownNewMessageNotification) return;
-    
-    const messages = JSON.parse(localStorage.getItem('chat_messages') || '[]');
-    if (messages.length > 0) {
-        showNotification('有一則新訊息', 'info');
-        hasShownNewMessageNotification = true;
-    }
-}
-
-// 頁面焦點變化時禁用後續通知
-document.addEventListener('visibilitychange', function() {
-    if (!document.hidden) {
-        hasShownNewMessageNotification = true;
-    }
-});
   </script>
 </body>
 </html>

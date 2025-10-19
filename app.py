@@ -688,3 +688,92 @@ if __name__ == '__main__':
     init_db()
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
+# ==================== 測試和診斷 API ====================
+@app.route('/api/test')
+def test_api():
+    """測試 API 是否正常工作"""
+    return jsonify({'success': True, 'message': 'API 服務正常'})
+
+@app.route('/api/test-db')
+def test_db():
+    """測試數據庫連接"""
+    try:
+        conn = get_db_connection()
+        conn.execute('SELECT 1')
+        conn.close()
+        return jsonify({'success': True, 'message': '數據庫連接正常'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'數據庫錯誤: {str(e)}'}), 500
+
+# ==================== 修復同步 API ====================
+@app.route('/api/sync-data', methods=['POST'])
+def sync_data():
+    """接收前端 localStorage 數據並同步到數據庫"""
+    try:
+        print("=== 開始同步數據 ===")
+        data = request.json
+        if not data:
+            return jsonify({'success': False, 'message': '沒有收到數據'}), 400
+        
+        print(f"收到數據類型: {type(data)}")
+        print(f"數據包含的鍵: {list(data.keys())}")
+        
+        # 測試數據庫連接
+        conn = get_db_connection()
+        print("數據庫連接成功")
+        
+        # 簡單同步示例 - 只同步用戶數據
+        if 'users' in data and data['users']:
+            users_count = 0
+            for username, user_data in data['users'].items():
+                existing_user = conn.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
+                if not existing_user:
+                    conn.execute('''
+                        INSERT INTO users (username, password, name, school, email, intro, anonymous)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    ''', (
+                        username,
+                        'synced_password',
+                        user_data.get('name', ''),
+                        user_data.get('school', ''),
+                        user_data.get('email', ''),
+                        user_data.get('intro', ''),
+                        user_data.get('anonymous', '')
+                    ))
+                    users_count += 1
+            conn.commit()
+            print(f"成功同步 {users_count} 個用戶")
+        
+        conn.close()
+        return jsonify({'success': True, 'message': f'數據同步成功，新增 {users_count} 個用戶'})
+    
+    except Exception as e:
+        print(f"同步錯誤: {str(e)}")
+        import traceback
+        print(f"錯誤堆棧: {traceback.format_exc()}")
+        return jsonify({'success': False, 'message': f'同步失敗: {str(e)}'}), 500
+
+@app.route('/api/get-sync-data', methods=['GET'])
+def get_sync_data():
+    """獲取雲端數據供前端使用"""
+    try:
+        conn = get_db_connection()
+        
+        # 簡單返回用戶數量測試
+        users_count = conn.execute('SELECT COUNT(*) as count FROM users').fetchone()['count']
+        messages_count = conn.execute('SELECT COUNT(*) as count FROM messages').fetchone()['count']
+        
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'stats': {
+                'users_count': users_count,
+                'messages_count': messages_count
+            },
+            'message': '數據獲取成功'
+        })
+    
+    except Exception as e:
+        print(f"獲取數據錯誤: {str(e)}")
+        return jsonify({'success': False, 'message': f'獲取數據失敗: {str(e)}'}), 500

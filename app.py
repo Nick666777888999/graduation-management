@@ -214,3 +214,15 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
 else:
     application = app
+
+# 初始化管理員帳號
+if 'Nick20130104' not in storage['users']:
+    storage['users']['Nick20130104'] = {
+        'username': 'Nick20130104',
+        'password': 'Nick20130104', 
+        'name': '系統管理員',
+        'school': '管理學校',
+        'email': 'admin@system.com',
+        'intro': '我是系統管理員',
+        'is_admin': True
+    }

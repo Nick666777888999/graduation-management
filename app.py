@@ -214,35 +214,3 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
 else:
     application = app
-
-# ==================== 管理員功能 ====================
-@app.route('/api/admin/users')
-def admin_users():
-    """獲取所有用戶資料"""
-    return jsonify({
-        'success': True,
-        'users': storage['users'],
-        'total_count': len(storage['users'])
-    })
-
-@app.route('/api/admin/messages')
-def admin_messages():
-    """獲取所有聊天訊息"""
-    return jsonify({
-        'success': True,
-        'messages': storage['messages'],
-        'total_count': len(storage['messages'])
-    })
-
-@app.route('/api/admin/stats')
-def admin_stats():
-    """系統統計數據"""
-    return jsonify({
-        'success': True,
-        'stats': {
-            'users_count': len(storage['users']),
-            'messages_count': len(storage['messages']),
-            'active_users': list(storage['users'].keys())[-10:],
-            'recent_messages': storage['messages'][-10:]
-        }
-    })

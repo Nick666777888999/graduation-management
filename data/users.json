@@ -1,0 +1,44 @@
+{
+  "Nick20130104": {
+    "password": "pbkdf2:sha256:600000$S0bKUWnz4ZuYLv4Q$3f44bf6ff9d702026d491882cf70d19cc7f76369a3b4fa66791c18a52678e433",
+    "name": "系統管理員",
+    "school": "管理學校",
+    "email": "admin@system.com",
+    "isAdmin": true,
+    "intro": "我是系統管理員，負責管理畢業資料系統。",
+    "anonymous": "管理員",
+    "avatar": null,
+    "personality": "認真負責、細心嚴謹",
+    "hobbies": "系統管理、程式設計",
+    "likes": "解決問題、學習新技術",
+    "created_at": "2025-10-07T10:31:00.091619"
+  },
+  "q": {
+    "password": "q",
+    "name": "q",
+    "school": "q",
+    "email": "hsaiohubert@gmail.com",
+    "isAdmin": false,
+    "intro": "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
+    "anonymous": "q",
+    "avatar": null,
+    "personality": "",
+    "hobbies": "",
+    "likes": "",
+    "created_at": "2025-10-10T12:04:29.763673"
+  },
+  "s": {
+    "password": "s",
+    "name": "s",
+    "school": "s",
+    "email": "hsaiohubert@gmail.com",
+    "isAdmin": false,
+    "intro": "sssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+    "anonymous": "s",
+    "avatar": null,
+    "personality": "",
+    "hobbies": "",
+    "likes": "",
+    "created_at": "2025-10-10T12:04:52.356781"
+  }
+}

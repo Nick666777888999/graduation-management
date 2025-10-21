@@ -1707,25 +1707,6 @@
     }
 
     // 登入功能
-
-    // 顯示註冊表單
-    function showRegister() {
-      document.getElementById("login-form").style.display = "none";
-      document.getElementById("register-form").style.display = "block";
-    }
-
-    // 顯示管理員登入表單
-    function showAdminLogin() {
-      document.getElementById("login-form").style.display = "none";
-      document.getElementById("admin-login-form").style.display = "block";
-    }
-
-    // 顯示普通登入表單
-    function showLogin() {
-      document.getElementById("register-form").style.display = "none";
-      document.getElementById("admin-login-form").style.display = "none";
-      document.getElementById("login-form").style.display = "block";
-    }
     function login() {
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
@@ -1792,7 +1773,7 @@
     // 模擬檢查更新API - 修復版本
     function simulateCheckUpdates() {
       return new Promise((resolve) => {
-        setTimeout(() => {
+        setTimeout(() => 
           const updates = {
             success: true,
             pending_friend_requests: checkNewFriendRequests(),
@@ -1801,11 +1782,15 @@
           };
           
           // 如果沒有任何更新，標記為無更新
+              updates.pending_friend_requests === 0 && 
+              updates.new_questions === 0 {
+            updates.no_updates = true;
+          }
           
           resolve(updates);
         }, 500);
       });
-    }
+    
 
     // 檢查新私訊
     function checkNewPrivateMessages() {
@@ -1877,6 +1862,16 @@
         showNotification(`您有 ${updateData.pending_friend_requests} 個好友申請`, 'info');
       }
       
+      // 處理公共聊天室新消息
+        showNotification('聊天室有新消息', 'info');
+      
+      
+      // 處理新問題 - 修復：管理員不會收到自己問題的通知
+      if (updateData.new_questions > 0 && currentPage !== 'questions') {
+        showNotification('題目討論區有新問題', 'info');
+      }
+      
+      // 如果當前在相關頁面，自動刷新內容
       if (currentPage === 'friends') {
         loadFriendRequests();
         loadFriendsList();
@@ -4131,34 +4126,3 @@ document.body.appendChild(syncIndicator);
   </script>
 </body>
 </html>
-
-    // 顯示註冊表單
-    function showRegister() {
-      document.getElementById('login-form').style.display = 'none';
-      document.getElementById('register-form').style.display = 'block';
-    }
-
-    // 顯示登入表單  
-    function showLogin() {
-      document.getElementById('register-form').style.display = 'none';
-      document.getElementById('login-form').style.display = 'block';
-    }
-
-    // 顯示註冊表單
-    function showRegister() {
-      document.getElementById('login-form').style.display = 'none';
-      document.getElementById('register-form').style.display = 'block';
-    }
-
-    // 顯示管理員登入表單
-    function showAdminLogin() {
-      document.getElementById('login-form').style.display = 'none';
-      document.getElementById('admin-login-form').style.display = 'block';
-    }
-
-    // 顯示普通登入表單
-    function showLogin() {
-      document.getElementById('register-form').style.display = 'none';
-      document.getElementById('admin-login-form').style.display = 'none';
-      document.getElementById('login-form').style.display = 'block';
-    }

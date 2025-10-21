@@ -4125,3 +4125,22 @@ document.body.appendChild(syncIndicator);
       document.getElementById('register-form').style.display = 'none';
       document.getElementById('login-form').style.display = 'block';
     }
+
+    // 顯示註冊表單
+    function showRegister() {
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('register-form').style.display = 'block';
+    }
+
+    // 顯示管理員登入表單
+    function showAdminLogin() {
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('admin-login-form').style.display = 'block';
+    }
+
+    // 顯示普通登入表單
+    function showLogin() {
+      document.getElementById('register-form').style.display = 'none';
+      document.getElementById('admin-login-form').style.display = 'none';
+      document.getElementById('login-form').style.display = 'block';
+    }

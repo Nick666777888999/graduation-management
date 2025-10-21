@@ -1862,9 +1862,6 @@
         showNotification(`您有 ${updateData.pending_friend_requests} 個好友申請`, 'info');
       }
       
-      }
-      
-      // 如果當前在相關頁面，自動刷新內容
       if (currentPage === 'friends') {
         loadFriendRequests();
         loadFriendsList();

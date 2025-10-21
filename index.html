@@ -1862,13 +1862,6 @@
         showNotification(`您有 ${updateData.pending_friend_requests} 個好友申請`, 'info');
       }
       
-      // 處理公共聊天室新消息
-        showNotification('聊天室有新消息', 'info');
-      }
-      
-      // 處理新問題 - 修復：管理員不會收到自己問題的通知
-      if (updateData.new_questions > 0 && currentPage !== 'questions') {
-        showNotification('題目討論區有新問題', 'info');
       }
       
       // 如果當前在相關頁面，自動刷新內容

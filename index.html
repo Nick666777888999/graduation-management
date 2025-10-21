@@ -1537,6 +1537,148 @@
   <div id="notification" class="notification"></div>
 
   <script>
+    // 顯示註冊表單
+    function showRegister() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('register-screen').style.display = 'flex';
+    }
+
+    // 顯示管理員登入表單
+    function showAdminLogin() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-login-screen').style.display = 'flex';
+    }
+
+    // 顯示普通登入表單
+    function showLogin() {
+      document.getElementById('register-screen').style.display = 'none';
+      document.getElementById('admin-login-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 登入功能
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      
+      if (!username || !password) {
+        errorMsg.textContent = '請輸入帳號和密碼';
+        return;
+      }
+      
+      const user = backendData.users[username];
+      
+      if (user && user.password === password) {
+        currentUser = username;
+        isAdmin = user.isAdmin || false;
+        
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'block';
+        document.getElementById('current-user-name').textContent = user.name;
+        
+        if (isAdmin) {
+          document.getElementById('admin-badge').style.display = 'inline-block';
+          document.getElementById('admin-tools').style.display = 'block';
+          document.getElementById('review-btn').style.display = 'block';
+          document.getElementById('statistics-btn').style.display = 'block';
+        }
+        
+        loadContent('dashboard');
+        showNotification(`歡迎回來，${user.name}！`, 'success');
+        
+        // 開始實時更新
+        startRealTimeUpdates();
+      } else {
+        errorMsg.textContent = '帳號或密碼錯誤';
+      }
+    }
+
+    // 隱藏註冊頁面
+    function hideRegister() {
+      document.getElementById('register-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 隱藏管理員登入
+    function hideAdminLogin() {
+      document.getElementById('admin-login-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('captcha-check').checked = false;
+      captchaVerified = false;
+    }
+
+    // 顯示註冊表單
+    function showRegister() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('register-screen').style.display = 'flex';
+    }
+
+    // 顯示管理員登入表單
+    function showAdminLogin() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-login-screen').style.display = 'flex';
+    }
+
+    // 顯示普通登入表單
+    function showLogin() {
+      document.getElementById('register-screen').style.display = 'none';
+      document.getElementById('admin-login-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 登入功能
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      
+      if (!username || !password) {
+        errorMsg.textContent = '請輸入帳號和密碼';
+        return;
+      }
+      
+      const user = backendData.users[username];
+      
+      if (user && user.password === password) {
+        currentUser = username;
+        isAdmin = user.isAdmin || false;
+        
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'block';
+        document.getElementById('current-user-name').textContent = user.name;
+        
+        if (isAdmin) {
+          document.getElementById('admin-badge').style.display = 'inline-block';
+          document.getElementById('admin-tools').style.display = 'block';
+          document.getElementById('review-btn').style.display = 'block';
+          document.getElementById('statistics-btn').style.display = 'block';
+        }
+        
+        loadContent('dashboard');
+        showNotification(`歡迎回來，${user.name}！`, 'success');
+        
+        // 開始實時更新
+        startRealTimeUpdates();
+      } else {
+        errorMsg.textContent = '帳號或密碼錯誤';
+      }
+    }
+
+    // 隱藏註冊頁面
+    function hideRegister() {
+      document.getElementById('register-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // 隱藏管理員登入
+    function hideAdminLogin() {
+      document.getElementById('admin-login-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('captcha-check').checked = false;
+      captchaVerified = false;
+    }
+
     // 全域變數
     let currentUser = null;
     let isAdmin = false;

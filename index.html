@@ -1776,17 +1776,13 @@
         setTimeout(() => {
           const updates = {
             success: true,
-            new_private_messages: checkNewPrivateMessages(),
             pending_friend_requests: checkNewFriendRequests(),
-            new_public_messages: checkNewPublicMessages(),
             new_questions: checkNewQuestions(),
             timestamp: Date.now()
           };
           
           // 如果沒有任何更新，標記為無更新
-          if (updates.new_private_messages === 0 && 
               updates.pending_friend_requests === 0 && 
-              updates.new_public_messages === 0 && 
               updates.new_questions === 0) {
             updates.no_updates = true;
           }
@@ -1859,8 +1855,6 @@
       lastUpdateCheck = updateData.timestamp;
       
       // 處理新私訊
-      if (updateData.new_private_messages > 0 && currentPage !== 'friends') {
-        showNotification(`您有 ${updateData.new_private_messages} 條新私訊`, 'info');
       }
       
       // 處理好友申請
@@ -1869,7 +1863,6 @@
       }
       
       // 處理公共聊天室新消息
-      if (updateData.new_public_messages > 0 && currentPage !== 'chat') {
         showNotification('聊天室有新消息', 'info');
       }
       

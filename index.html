@@ -1707,6 +1707,25 @@
     }
 
     // 登入功能
+
+    // 顯示註冊表單
+    function showRegister() {
+      document.getElementById("login-form").style.display = "none";
+      document.getElementById("register-form").style.display = "block";
+    }
+
+    // 顯示管理員登入表單
+    function showAdminLogin() {
+      document.getElementById("login-form").style.display = "none";
+      document.getElementById("admin-login-form").style.display = "block";
+    }
+
+    // 顯示普通登入表單
+    function showLogin() {
+      document.getElementById("register-form").style.display = "none";
+      document.getElementById("admin-login-form").style.display = "none";
+      document.getElementById("login-form").style.display = "block";
+    }
     function login() {
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
@@ -1782,7 +1801,6 @@
           };
           
           // 如果沒有任何更新，標記為無更新
-          }
           
           resolve(updates);
         }, 500);

@@ -1782,9 +1782,6 @@
           };
           
           // 如果沒有任何更新，標記為無更新
-              updates.pending_friend_requests === 0 && 
-              updates.new_questions === 0) {
-            updates.no_updates = true;
           }
           
           resolve(updates);
@@ -4116,3 +4113,15 @@ document.body.appendChild(syncIndicator);
   </script>
 </body>
 </html>
+
+    // 顯示註冊表單
+    function showRegister() {
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('register-form').style.display = 'block';
+    }
+
+    // 顯示登入表單  
+    function showLogin() {
+      document.getElementById('register-form').style.display = 'none';
+      document.getElementById('login-form').style.display = 'block';
+    }

@@ -1616,6 +1616,9 @@
       localStorage.setItem('private_messages', JSON.stringify(backendData.privateMessages));
       localStorage.setItem('questions_data', JSON.stringify(backendData.questions));
       localStorage.setItem('chat_messages', JSON.stringify(backendData.chatMessages));
+    
+    // 自動同步到雲端
+    syncToCloud();
     }
 
     // 顯示通知

@@ -72,6 +72,20 @@ def register():
         if username in storage.users:
             return jsonify({"success": False, "message": "用戶已存在"}), 400
             
+        # 重要：保存所有用戶數據，包括密碼
+        storage.users[username] = {
+            'password': data.get('password', ''),  # 保存密碼
+            'name': data.get('name', ''),
+            'school': data.get('school', ''),
+            'email': data.get('email', ''),
+            'is_admin': False,
+            'intro': data.get('intro', '')
+        }
+        
+        return jsonify({"success": True, "message": "註冊成功"})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500), 400
+            
         storage.users[username] = {
             'password': data.get('password', ''),
             'name': data.get('name', ''),

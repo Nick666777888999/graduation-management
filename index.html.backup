@@ -1567,64 +1567,7 @@
     };
 
     // 初始化
-    
-    // 顯示註冊表單
-    function showRegister() {
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('register-screen').style.display = 'flex';
-    }
-
-    // 顯示管理員登入表單
-    function showAdminLogin() {
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('admin-login-screen').style.display = 'flex';
-    }
-
-    // 顯示普通登入表單
-    function showLogin() {
-      document.getElementById('register-screen').style.display = 'none';
-      document.getElementById('admin-login-screen').style.display = 'none';
-      document.getElementById('login-screen').style.display = 'flex';
-    }
-
-    // 登入功能
-    function login() {
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-      const errorMsg = document.getElementById('error-msg');
-      
-      if (!username || !password) {
-        errorMsg.textContent = '請輸入帳號和密碼';
-        return;
-      }
-      
-      const user = backendData.users[username];
-      
-      if (user && user.password === password) {
-        currentUser = username;
-        isAdmin = user.isAdmin || false;
-        
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('main-screen').style.display = 'block';
-        document.getElementById('current-user-name').textContent = user.name;
-        
-        if (isAdmin) {
-          document.getElementById('admin-badge').style.display = 'inline-block';
-          document.getElementById('admin-tools').style.display = 'block';
-          document.getElementById('review-btn').style.display = 'block';
-          document.getElementById('statistics-btn').style.display = 'block';
-        }
-        
-        loadContent('dashboard');
-        showNotification(`歡迎回來，${user.name}！`, 'success');
-        
-        // 開始實時更新
-        startRealTimeUpdates();
-      } else {
-        errorMsg.textContent = '帳號或密碼錯誤';
-      }
-    }
-document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
       // 檢查是否有預設管理員帳號
       if (!backendData.users['Nick20130104']) {
         backendData.users['Nick20130104'] = {
@@ -1754,7 +1697,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('statistics-btn').style.display = 'block';
         
         loadContent('dashboard');
-        showNotification(`管理員 ${user.name} 歡迎回來！`, 'success');
+        
         
         // 開始實時更新
         startRealTimeUpdates();
@@ -1792,7 +1735,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         loadContent('dashboard');
-        showNotification(`歡迎回來，${user.name}！`, 'success');
+        
         
         // 開始實時更新
         startRealTimeUpdates();
@@ -1830,17 +1773,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // 模擬檢查更新API - 修復版本
     function simulateCheckUpdates() {
       return new Promise((resolve) => {
-        setTimeout(() => 
+        setTimeout(() => {
           const updates = {
             success: true,
+            new_private_messages: checkNewPrivateMessages(),
             pending_friend_requests: checkNewFriendRequests(),
+            new_public_messages: checkNewPublicMessages(),
             new_questions: checkNewQuestions(),
             timestamp: Date.now()
           };
           
           // 如果沒有任何更新，標記為無更新
+          if (updates.new_private_messages === 0 && 
               updates.pending_friend_requests === 0 && 
-    
+              updates.new_public_messages === 0 && 
+              updates.new_questions === 0) {
+            updates.no_updates = true;
+          }
+          
+          resolve(updates);
+        }, 500);
+      });
+    }
 
     // 檢查新私訊
     function checkNewPrivateMessages() {
@@ -1905,20 +1859,23 @@ document.addEventListener('DOMContentLoaded', function() {
       lastUpdateCheck = updateData.timestamp;
       
       // 處理新私訊
+      if (updateData.new_private_messages > 0 && currentPage !== 'friends') {
+        
       }
       
       // 處理好友申請
       if (updateData.pending_friend_requests > 0 && currentPage !== 'friends') {
-        showNotification(`您有 ${updateData.pending_friend_requests} 個好友申請`, 'info');
+        
       }
       
       // 處理公共聊天室新消息
-        showNotification('聊天室有新消息', 'info');
-      
+      if (updateData.new_public_messages > 0 && currentPage !== 'chat') {
+        
+      }
       
       // 處理新問題 - 修復：管理員不會收到自己問題的通知
       if (updateData.new_questions > 0 && currentPage !== 'questions') {
-        showNotification('題目討論區有新問題', 'info');
+        
       }
       
       // 如果當前在相關頁面，自動刷新內容
@@ -1934,7 +1891,7 @@ document.addEventListener('DOMContentLoaded', function() {
       } else if (currentPage === 'questions') {
         loadQuestions();
       }
-    
+    }
 
     // 更新活動時間
     function updateActivity(type) {
@@ -1982,22 +1939,22 @@ document.addEventListener('DOMContentLoaded', function() {
       const intro = document.getElementById('reg-intro').value.trim();
 
       if (!name || !school || !email || !username || !password) {
-        showNotification('請完整填寫所有欄位', 'error');
+        
         return;
       }
       
       if (!email.includes('@gmail.com')) {
-        showNotification('請輸入正確的 Gmail', 'error');
+        
         return;
       }
       
       if (intro.length < 50) {
-        showNotification('個人介紹至少需要50字', 'error');
+        
         return;
       }
       
       if (backendData.users[username]) {
-        showNotification('此帳號已被使用，請選擇其他帳號', 'error');
+        
         return;
       }
 
@@ -2017,7 +1974,7 @@ document.addEventListener('DOMContentLoaded', function() {
       };
       
       saveBackendData();
-      showNotification('註冊成功，請登入', 'success');
+      
       hideRegister();
     }
 
@@ -2225,7 +2182,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const content = document.getElementById('announcement-content').value.trim();
       
       if (!title || !content) {
-        showNotification('請填寫標題和內容', 'error');
+        
         return;
       }
       
@@ -2244,7 +2201,7 @@ document.addEventListener('DOMContentLoaded', function() {
       backendData.announcements.unshift(announcement);
       saveBackendData();
       
-      showNotification('公告已發布', 'success');
+      
       document.getElementById('announcement-title').value = '';
       document.getElementById('announcement-content').value = '';
       loadAnnouncements();
@@ -2255,7 +2212,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (confirm('確定要刪除這則公告嗎？')) {
         backendData.announcements.splice(index, 1);
         saveBackendData();
-        showNotification('公告已刪除', 'success');
+        
         loadAnnouncements();
       }
     }
@@ -2348,32 +2305,32 @@ document.addEventListener('DOMContentLoaded', function() {
       const agreed = document.getElementById('agree-checkbox').checked;
 
       if (!name || !school || !gmail || !grade || !personality || !hobbies || !likes) {
-        showNotification('請填寫所有欄位', 'error');
+        
         return;
       }
       
       if (/\d/.test(name)) {
-        showNotification('姓名不能包含數字', 'error');
+        
         return;
       }
       
       if (/\d/.test(school)) {
-        showNotification('學校名稱不能包含數字', 'error');
+        
         return;
       }
       
       if (!gmail.endsWith('@gmail.com')) {
-        showNotification('請輸入正確的 Gmail', 'error');
+        
         return;
       }
       
       if (intro.length < 50) {
-        showNotification('個人介紹至少需要50字', 'error');
+        
         return;
       }
       
       if (!agreed) {
-        showNotification('請勾選同意書', 'error');
+        
         return;
       }
 
@@ -2412,7 +2369,7 @@ document.addEventListener('DOMContentLoaded', function() {
         backendData.pendingData.push(data);
         saveBackendData();
 
-        showNotification('資料已成功送出，等待管理員審核', 'success');
+        
         renderDataForm();
       }
     }
@@ -2554,7 +2511,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 審核頁面
     function renderReview() {
       if (!isAdmin) {
-        showNotification('您沒有權限訪問此頁面', 'error');
+        
         loadContent('dashboard');
         return;
       }
@@ -2723,7 +2680,7 @@ document.addEventListener('DOMContentLoaded', function() {
       backendData.pendingData.splice(index, 1);
       
       saveBackendData();
-      showNotification('資料已通過審核', 'success');
+      
       renderReview(); // 重新渲染整個審核頁面
     }
 
@@ -2731,7 +2688,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function rejectData(index) {
       backendData.pendingData[index].status = 'rejected';
       saveBackendData();
-      showNotification('資料已拒絕', 'success');
+      
       renderReview(); // 重新渲染整個審核頁面
     }
 
@@ -2835,7 +2792,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 刪除學生資料（僅管理員）
     function deleteStudentData(level, index) {
       if (!isAdmin) {
-        showNotification('您沒有權限執行此操作', 'error');
+        
         return;
       }
       
@@ -2843,7 +2800,7 @@ document.addEventListener('DOMContentLoaded', function() {
         backendData.studentData[level].splice(index, 1);
         saveBackendData();
         renderStudentData(level, getLevelName(level));
-        showNotification('資料已刪除', 'success');
+        
       }
     }
     
@@ -2861,7 +2818,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 數據統計功能 (僅管理員)
     function renderStatistics() {
       if (!isAdmin) {
-        showNotification('您沒有權限訪問此頁面', 'error');
+        
         loadContent('dashboard');
         return;
       }
@@ -3046,7 +3003,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const textContent = text || input.value.trim();
       
       if (!textContent && !mediaData) {
-        showNotification('請輸入訊息內容或上傳檔案', 'error');
+        
         return;
       }
       
@@ -3064,7 +3021,7 @@ document.addEventListener('DOMContentLoaded', function() {
       saveBackendData();
       if (input) input.value = '';
       loadChat();
-      showNotification('訊息已發送', 'success');
+      
       
       // 通知其他用戶有新消息
       updateActivity('public_messages');
@@ -3073,7 +3030,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 刪除訊息
     function deleteMessage(index) {
       if (!isAdmin && backendData.chatMessages[index].sender !== currentUser) {
-        showNotification('您只能刪除自己的訊息', 'error');
+        
         return;
       }
       
@@ -3081,7 +3038,7 @@ document.addEventListener('DOMContentLoaded', function() {
         backendData.chatMessages.splice(index, 1);
         saveBackendData();
         loadChat();
-        showNotification('訊息已刪除', 'success');
+        
       }
     }
 
@@ -3231,22 +3188,22 @@ document.addEventListener('DOMContentLoaded', function() {
       const grade = document.getElementById('question-grade').value.trim();
       
       if (!text) {
-        showNotification('請輸入問題內容', 'error');
+        
         return;
       }
       
       if (text.length > 150) {
-        showNotification('問題內容不能超過150字', 'error');
+        
         return;
       }
       
       if (!subject) {
-        showNotification('請選擇科目', 'error');
+        
         return;
       }
       
       if (!grade) {
-        showNotification('請輸入年級', 'error');
+        
         return;
       }
       
@@ -3284,7 +3241,7 @@ document.addEventListener('DOMContentLoaded', function() {
         backendData.questions.unshift(question);
         saveBackendData();
         
-        showNotification('問題已發表', 'success');
+        
         closeQuestionForm();
         loadQuestions();
         
@@ -3309,12 +3266,12 @@ document.addEventListener('DOMContentLoaded', function() {
           // 點讚
           question.liked_by.push(currentUser);
           question.likes = (question.likes || 0) + 1;
-          showNotification('已點讚', 'success');
+          
         } else {
           // 取消點讚
           question.liked_by.splice(userIndex, 1);
           question.likes = Math.max(0, (question.likes || 1) - 1);
-          showNotification('已取消點讚', 'success');
+          
         }
         
         saveBackendData();
@@ -3336,7 +3293,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const text = commentInput.value.trim();
       
       if (!text) {
-        showNotification('請輸入留言內容', 'error');
+        
         return;
       }
       
@@ -3353,7 +3310,7 @@ document.addEventListener('DOMContentLoaded', function() {
         saveBackendData();
         commentInput.value = '';
         loadQuestions();
-        showNotification('留言已發布', 'success');
+        
       }
     }
 
@@ -3364,7 +3321,7 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // 檢查權限：管理員或問題作者
       if (question.author !== currentUser && !isAdmin) {
-        showNotification('您沒有權限刪除此問題', 'error');
+        
         return;
       }
       
@@ -3372,7 +3329,7 @@ document.addEventListener('DOMContentLoaded', function() {
         backendData.questions = backendData.questions.filter(q => q.id !== questionId);
         saveBackendData();
         loadQuestions();
-        showNotification('問題已刪除', 'success');
+        
       }
     }
 
@@ -3420,7 +3377,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const confirmPassword = document.getElementById('profile-confirm-password').value;
       
       if (intro.length < 50) {
-        showNotification('個人介紹至少需要50字', 'error');
+        
         return;
       }
       
@@ -3434,27 +3391,27 @@ document.addEventListener('DOMContentLoaded', function() {
       // 處理密碼變更
       if (currentPassword || newPassword || confirmPassword) {
         if (!currentPassword) {
-          showNotification('請輸入當前密碼', 'error');
+          
           return;
         }
         
         if (currentPassword !== user.password) {
-          showNotification('當前密碼不正確', 'error');
+          
           return;
         }
         
         if (newPassword !== confirmPassword) {
-          showNotification('新密碼與確認密碼不一致', 'error');
+          
           return;
         }
         
         if (newPassword.length < 6) {
-          showNotification('新密碼長度至少需要6個字符', 'error');
+          
           return;
         }
         
         user.password = newPassword;
-        showNotification('密碼已成功變更', 'success');
+        
         
         // 清空密碼欄位
         document.getElementById('profile-current-password').value = '';
@@ -3471,14 +3428,14 @@ document.addEventListener('DOMContentLoaded', function() {
         reader.onload = function(e) {
           user.avatar = e.target.result;
           document.getElementById('profile-avatar').src = e.target.result;
-          showNotification('頭像已成功更新', 'success');
+          
         };
         
         reader.readAsDataURL(file);
       }
       
       saveBackendData();
-      showNotification('個人資料已更新', 'success');
+      
       
       // 重新載入當前頁面以更新顯示
       loadContent(currentPage);
@@ -3603,9 +3560,9 @@ document.addEventListener('DOMContentLoaded', function() {
           became_friends_at: new Date().toISOString()
         });
         
-        showNotification('好友申請已接受', 'success');
+        
       } else {
-        showNotification('好友申請已拒絕', 'success');
+        
       }
       
       saveBackendData();
@@ -3679,14 +3636,14 @@ document.addEventListener('DOMContentLoaded', function() {
       // 檢查是否已經發送過申請
       const hasSentRequest = backendData.friends[currentUser].sent_requests?.some(req => req.to === targetUser);
       if (hasSentRequest) {
-        showNotification('已經發送過好友申請', 'error');
+        
         return;
       }
       
       // 檢查是否已經是好友
       const isFriend = backendData.friends[currentUser].friends?.some(friend => friend.username === targetUser);
       if (isFriend) {
-        showNotification('已經是好友', 'error');
+        
         return;
       }
       
@@ -3713,7 +3670,7 @@ document.addEventListener('DOMContentLoaded', function() {
       backendData.friends[targetUser].received_requests.push(requestData);
       
       saveBackendData();
-      showNotification('好友申請已發送', 'success');
+      
       
       // 重新載入當前頁面以更新按鈕狀態
       if (currentPage.startsWith('primary') || currentPage.startsWith('junior') || 
@@ -3743,7 +3700,7 @@ document.addEventListener('DOMContentLoaded', function() {
       delete backendData.privateMessages[chatKey];
       
       saveBackendData();
-      showNotification('好友已刪除', 'success');
+      
       loadFriendsList();
       renderPrivateChat();
     }
@@ -3782,7 +3739,7 @@ document.addEventListener('DOMContentLoaded', function() {
       
       const friendUsername = document.getElementById('private-chat-friend').value;
       if (!friendUsername) {
-        showNotification('請先選擇好友', 'error');
+        
         return;
       }
       
@@ -3891,12 +3848,12 @@ document.addEventListener('DOMContentLoaded', function() {
       const textContent = text || input.value.trim();
       
       if (!friendUsername) {
-        showNotification('請選擇好友', 'error');
+        
         return;
       }
       
       if (!textContent && !mediaData) {
-        showNotification('請輸入訊息內容或上傳檔案', 'error');
+        
         return;
       }
       
@@ -3931,7 +3888,7 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // 立即更新顯示
       loadPrivateMessages(friendUsername);
-      showNotification('私訊已發送', 'success');
+      
       
       // 通知對方有新消息
       updateActivity('private_messages');
@@ -3940,7 +3897,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 系統設定
     function renderSystemConfig() {
       if (!isAdmin) {
-        showNotification('您沒有權限訪問此頁面', 'error');
+        
         loadContent('dashboard');
         return;
       }
@@ -4002,7 +3959,7 @@ document.addEventListener('DOMContentLoaded', function() {
       };
       
       saveBackendData();
-      showNotification('系統設定已更新', 'success');
+      
       
       // 更新網站標題
       document.title = backendData.systemConfig.siteTitle || '畢業資料管理系統';
@@ -4029,7 +3986,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 系統編輯器
     function openSystemEditor() {
-      showNotification('系統編輯器功能開發中', 'info');
+      
       closeAdminMenu();
     }
 
@@ -4060,13 +4017,13 @@ document.addEventListener('DOMContentLoaded', function() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
       
-      showNotification('系統備份已下載', 'success');
+      
       closeAdminMenu();
     }
 
     // 系統還原
     function restoreSystem() {
-      showNotification('系統還原功能開發中', 'info');
+      
       closeAdminMenu();
     }
   // ==================== 雲端同步功能 ====================
@@ -4159,20 +4116,6 @@ if (document.readyState === 'loading') {
 }
 
 // 添加同步狀態指示器
-const syncIndicator = document.createElement('div');
-syncIndicator.innerHTML = '🔄 雲端同步中';
-syncIndicator.style.cssText = `
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    background: #27ae60;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 12px;
-    z-index: 10000;
-`;
-document.body.appendChild(syncIndicator);
   </script>
 </body>
 </html>

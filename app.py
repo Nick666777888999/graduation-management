@@ -7,17 +7,17 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'graduation-system-secret-key-2024')
 CORS(app, supports_credentials=True)
 
-# 简单的内存存储
+# 簡單的內存存儲
 storage = {
     'users': {
         'Nick20130104': {
             'username': 'Nick20130104',
             'password': 'Nick20130104', 
-            'name': '系统管理员',
-            'school': '管理学校',
+            'name': '系統管理員',
+            'school': '管理學校',
             'email': 'admin@system.com',
             'is_admin': True,
-            'intro': '我是系统管理员'
+            'intro': '我是系統管理員'
         }
     },
     'messages': [],
@@ -32,13 +32,13 @@ storage = {
     'announcements': []
 }
 
-# ==================== 基础 API ====================
+# ==================== 基礎 API ====================
 @app.route('/')
 def home():
-    """系统信息"""
+    """系統信息"""
     return jsonify({
         "status": "success",
-        "message": "毕业管理系统 API",
+        "message": "畢業管理系統 API",
         "version": "2.0.0",
         "endpoints": {
             "health": "/api/health",
@@ -57,7 +57,7 @@ def home():
 
 @app.route('/api/health')
 def health():
-    """健康检查"""
+    """健康檢查"""
     return jsonify({
         "status": "healthy",
         "service": "graduation-management-system",
@@ -66,36 +66,36 @@ def health():
 
 @app.route('/api/test')
 def test():
-    """测试 API"""
+    """測試 API"""
     return jsonify({
         "success": True,
-        "message": "API 测试成功",
+        "message": "API 測試成功",
         "data": {"test": "ok"}
     })
 
-@app.route('/api/check-auth', methods=['GET'])
+@app.route('/api/check-auth', methods=['GET', 'POST'])  # 添加 POST 支持
 def check_auth():
-    """检查登录状态"""
+    """檢查登入狀態"""
     return jsonify({
         "authenticated": False,
-        "message": "请先登录",
+        "message": "請先登入",
         "user": None
     })
 
-# ==================== 管理员 API ====================
+# ==================== 管理員 API ====================
 @app.route('/api/admin/users', methods=['GET'])
 def admin_users():
-    """获取所有用户"""
+    """獲取所有用戶"""
     return jsonify({
         "success": True,
         "users": storage['users'],
         "count": len(storage['users']),
-        "message": "用户数据获取成功"
+        "message": "用戶數據獲取成功"
     })
 
 @app.route('/api/admin/stats', methods=['GET'])
 def admin_stats():
-    """系统统计"""
+    """系統統計"""
     return jsonify({
         "success": True,
         "stats": {
@@ -105,42 +105,42 @@ def admin_stats():
             "pending_count": len(storage['pending_data']),
             "announcements_count": len(storage['announcements'])
         },
-        "message": "统计数据获取成功"
+        "message": "統計數據獲取成功"
     })
 
 @app.route('/api/admin/pending-approvals', methods=['GET'])
 def admin_pending_approvals():
-    """待审核数据"""
+    """待審核數據"""
     return jsonify({
         "success": True,
         "pending": storage['pending_data'],
         "count": len(storage['pending_data']),
-        "message": "待审核数据获取成功"
+        "message": "待審核數據獲取成功"
     })
 
 @app.route('/api/admin/student-data', methods=['GET'])
 def admin_student_data():
-    """学生资料管理"""
+    """學生資料管理"""
     return jsonify({
         "success": True,
         "data": storage['student_data'],
         "total_count": sum(len(v) for v in storage['student_data'].values()),
-        "message": "学生资料获取成功"
+        "message": "學生資料獲取成功"
     })
 
 @app.route('/api/admin/system-config', methods=['GET'])
 def admin_system_config():
-    """系统配置"""
+    """系統配置"""
     return jsonify({
         "success": True,
         "config": storage['system_config'],
-        "message": "系统配置获取成功"
+        "message": "系統配置獲取成功"
     })
 
 # ==================== 同步功能 ====================
-@app.route('/api/get-sync-data', methods=['GET'])
+@app.route('/api/get-sync-data', methods=['GET', 'POST'])  # 添加 POST 支持
 def get_sync_data():
-    """获取同步数据"""
+    """獲取同步數據"""
     return jsonify({
         "success": True,
         "data": {
@@ -150,29 +150,46 @@ def get_sync_data():
             "announcements": storage['announcements'],
             "system_config": storage['system_config']
         },
-        "message": "同步数据获取成功"
+        "message": "同步數據獲取成功"
     })
 
-@app.route('/api/sync-data', methods=['POST'])
+@app.route('/api/sync-data', methods=['GET', 'POST'])  # 添加 GET 支持
 def sync_data():
-    """同步数据"""
+    """同步數據"""
+    if request.method == 'GET':
+        return jsonify({
+            "success": True,
+            "message": "同步API準備就緒",
+            "method": "支持 GET 和 POST 請求"
+        })
+    
     try:
         data = request.get_json()
         return jsonify({
             "success": True,
-            "message": "数据同步成功",
+            "message": "數據同步成功",
             "received_data": list(data.keys()) if data else []
         })
     except Exception as e:
         return jsonify({
             "success": False,
-            "message": f"同步失败: {str(e)}"
+            "message": f"同步失敗: {str(e)}"
         }), 500
 
-# ==================== 登录功能 ====================
-@app.route('/api/login', methods=['POST'])
+# ==================== 登入功能 ====================
+@app.route('/api/login', methods=['GET', 'POST'])  # 添加 GET 支持
 def login():
-    """用户登录"""
+    """用戶登入"""
+    if request.method == 'GET':
+        return jsonify({
+            "success": False,
+            "message": "請使用 POST 方法提交登入資料",
+            "example": {
+                "username": "您的帳號",
+                "password": "您的密碼"
+            }
+        })
+    
     try:
         data = request.get_json()
         username = data.get('username')
@@ -185,7 +202,7 @@ def login():
             
             return jsonify({
                 "success": True,
-                "message": "登录成功",
+                "message": "登入成功",
                 "user": {
                     "name": user['name'],
                     "isAdmin": user.get('is_admin', False),
@@ -195,17 +212,33 @@ def login():
         else:
             return jsonify({
                 "success": False,
-                "message": "账号或密码错误"
+                "message": "帳號或密碼錯誤"
             }), 401
             
     except Exception as e:
         return jsonify({
             "success": False,
-            "message": f"登录失败: {str(e)}"
+            "message": f"登入失敗: {str(e)}"
         }), 500
 
+# ==================== 新增測試用戶 API ====================
+@app.route('/api/test-users', methods=['GET'])
+def test_users():
+    """獲取測試用戶資訊"""
+    return jsonify({
+        "success": True,
+        "test_accounts": {
+            "admin": {
+                "username": "Nick20130104",
+                "password": "Nick20130104",
+                "name": "系統管理員"
+            }
+        },
+        "message": "測試帳號資訊"
+    })
+
 # ==================== Vercel 配置 ====================
-# Vercel 需要这个
+# Vercel 需要這個
 application = app
 
 if __name__ == '__main__':

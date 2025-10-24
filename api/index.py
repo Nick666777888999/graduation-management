@@ -351,10 +351,43 @@ def admin_system_config():
 
 @app.route('/api/get-all-data', methods=['GET'])
 def get_all_data():
-    """獲取所有雲端數據"""
+    """獲取所有雲端數據 - 簡化版本"""
     try:
-        # 不返回密碼
+        # 只返回用戶數據進行測試
         users_safe = {}
+        for username, user in storage.users.items():
+            users_safe[username] = {
+                'name': user.get('name', ''),
+                'school': user.get('school', ''),
+                'email': user.get('email', ''),
+                'is_admin': user.get('is_admin', False),
+                'intro': user.get('intro', '')
+            }
+
+        return jsonify({
+            "success": True,
+            "data": {
+                "users": users_safe,
+                "student_data": {"primary": [], "junior": [], "high": [], "other": []},
+                "pending_data": [],
+                "announcements": [],
+                "messages": [],
+                "friends": {},
+                "private_messages": {},
+                "questions": [],
+                "system_config": {}
+            },
+            "message": "數據獲取成功"
+        })
+
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        return jsonify({
+            "success": False,
+            "message": "伺服器內部錯誤",
+            "error": str(e)
+        }), 500
         for username, user in storage.users.items():
             user_copy = user.copy()
             user_copy.pop('password', None)

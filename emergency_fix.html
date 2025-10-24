@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>毕业管理系统 - 紧急修复版</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f0f8ff; }
+        .container { max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: #008B8B; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #008B8B; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #006666; }
+        .error { color: #e74c3c; text-align: center; margin: 10px 0; }
+        .success { color: #2ecc71; text-align: center; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🎓 毕业管理系统</h2>
+        <h3>紧急修复登录</h3>
+        
+        <div id="error-msg" class="error"></div>
+        <div id="success-msg" class="success"></div>
+        
+        <input type="text" id="username" placeholder="用户名" value="reliableuser">
+        <input type="password" id="password" placeholder="密码" value="reliable123">
+        <button onclick="login()">登录</button>
+        
+        <div style="margin-top: 20px; text-align: center;">
+            <p>测试账号: reliableuser</p>
+            <p>密码: reliable123</p>
+        </div>
+    </div>
+
+    <script>
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('error-msg');
+            const successMsg = document.getElementById('success-msg');
+            
+            errorMsg.textContent = '';
+            successMsg.textContent = '';
+            
+            if (!username || !password) {
+                errorMsg.textContent = '请输入用户名和密码';
+                return;
+            }
+            
+            try {
+                errorMsg.textContent = '登录中...';
+                
+                const response = await fetch('https://graduation-management.vercel.app/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    successMsg.textContent = '✅ 登录成功！';
+                    errorMsg.textContent = '';
+                    
+                    // 3秒后跳转到主系统
+                    setTimeout(() => {
+                        window.location.href = 'https://graduation-management.vercel.app';
+                    }, 2000);
+                    
+                } else {
+                    errorMsg.textContent = '❌ ' + (data.message || '登录失败');
+                }
+            } catch (error) {
+                errorMsg.textContent = '网络错误: ' + error.message;
+            }
+        }
+        
+        // 自动测试登录
+        setTimeout(() => {
+            console.log('自动测试登录...');
+            login();
+        }, 1000);
+    </script>
+</body>
+</html>

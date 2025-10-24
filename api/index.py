@@ -48,6 +48,64 @@ class CloudStorage:
 storage = CloudStorage()
 
 # ==================== 用戶管理 API ====================
+
+# ==================== 基礎 API ====================
+@app.route('/api/health', methods=['GET'])
+def health():
+    """健康檢查"""
+    return jsonify({
+        "status": "healthy",
+        "service": "graduation-management-system",
+        "timestamp": "2024-01-01T00:00:00Z"
+    })
+
+@app.route('/api/test', methods=['GET'])
+def test():
+    """測試 API"""
+    return jsonify({
+        "success": True,
+        "message": "API 測試成功",
+        "data": {"test": "ok"}
+    })
+
+@app.route('/api/check-auth', methods=['GET'])
+def check_auth():
+    """檢查登入狀態"""
+    return jsonify({
+        "authenticated": False,
+        "message": "請先登入",
+        "user": None
+    })
+
+
+# ==================== 基礎 API ====================
+@app.route('/api/health', methods=['GET'])
+def health():
+    """健康檢查"""
+    return jsonify({
+        "status": "healthy",
+        "service": "graduation-management-system",
+        "timestamp": "2024-01-01T00:00:00Z"
+    })
+
+@app.route('/api/test', methods=['GET'])
+def test():
+    """測試 API"""
+    return jsonify({
+        "success": True,
+        "message": "API 測試成功",
+        "data": {"test": "ok"}
+    })
+
+@app.route('/api/check-auth', methods=['GET'])
+def check_auth():
+    """檢查登入狀態"""
+    return jsonify({
+        "authenticated": False,
+        "message": "請先登入",
+        "user": None
+    })
+
 @app.route('/api/register', methods=['POST'])
 def register():
     """用戶註冊 - 雲端存儲"""
